@@ -69,3 +69,5 @@ for (i in 1:length(l_lus)) {
   st_write(lu_long_sum,paste0("/dados/projetos_andamento/TRADEhub/Linha_2/land_uses_aggregated/GPKG/total_area_agg_",nms_lus[i]))
   
   }
+
+grep(pattern = "res",x = unique(lu_long_sum$name))

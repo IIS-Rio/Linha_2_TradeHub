@@ -43,37 +43,39 @@ for(i in 1:length(gpks)){
   
   # abrindo gpk
   
-  lu <- st_read(gpks[i])
+  transition <- st_read(gpks[i])
 
   # mucando estrutura
   
   #lu_long <- pivot_longer(lu,cols = c(3:65))
-  lu_long <- lu %>%pivot_longer(cols = where(is.numeric))
-  
-  lu_long$name <-   gsub(lu_long$name,pattern = paste(c("CrpLnd","PltFor"),collapse = "|"),replacement = "Agrclture")
-  
-  
+  transition_long <- transition %>%pivot_longer(cols = where(is.numeric))
+  # agregando agriculture
+  transition_long$name <-   gsub(transition_long$name,pattern = paste(c("CrpLnd","PltFor"),collapse = "|"),replacement = "Agrclture")
+  # agregando nat veg
+  transition_long$name <-   gsub(transition_long$name,pattern = paste(c("Restor"),collapse = "|"),replacement = "NatVeg")
   # summarizing 
   
-  lu_long_sum <- lu_long%>%
+  transition_long_sum <- transition_long%>%
     #st_group_by(geometry) %>%
     group_by(name,geom,Country,ID)%>%
     summarise(value=sum(value))
   
   # voltando pra wide
   
-  lu_wide <- pivot_wider(lu_long_sum )
+  transition_wide <- pivot_wider(lu_long_sum )
   
   # salvando gpk
   
-  st_write(lu_wide,paste0("/dados/projetos_andamento/TRADEhub/Linha_2/land_uses_aggregated_transitions/GPKG/rec_",nms_gpks[i]))
+  st_write(transition_wide,paste0("/dados/projetos_andamento/TRADEhub/Linha_2/land_uses_aggregated_transitions/GPKG/rec_",nms_gpks[i]),append=F)
 
 }
 
 
 # testando
 
-teste <- st_read("/dados/projetos_andamento/TRADEhub/Linha_2/land_uses_aggregated_transitions/GPKG/rec_MATRIX_LUC_FC.gpkg")
+# teste <- st_read("/dados/projetos_andamento/TRADEhub/Linha_2/land_uses_aggregated_transitions/GPKG/rec_MATRIX_LUC_FC.gpkg")
+
+
 
 #-------------------------------------------------------------------------------
 # reclassificando csvs
@@ -93,27 +95,31 @@ nms_csvs <- list.files(p2,full.names = F)
 
 for(i in 1:length(csvs)) {
     
-    lu <- read.csv(csvs[i],header = F)
+    transition <- read.csv(csvs[i],header = F)
   
     # renaming
     
-    names(lu) <- c("Country","ID","from","to","scen","year","area")
+    names(transition) <- c("Country","ID","from","to","scen","year","area")
     
     # substituindo nomes
     
-    lu$from <-   gsub(lu$from,pattern = paste(c("CrpLnd","PltFor"),collapse = "|"),replacement = "Agrclture")
+    transition$from <-   gsub(transition$from,pattern = paste(c("CrpLnd","PltFor"),collapse = "|"),replacement = "Agrclture")
     
-    lu$to <-   gsub(lu$to,pattern = paste(c("CrpLnd","PltFor"),collapse = "|"),replacement = "Agrclture")
+    transition$from <-   gsub(transition$from,pattern = paste(c("CrpLnd","PltFor"),collapse = "|"),replacement = "Agrclture")
     
+    transition$to <-   gsub(transition$to,pattern = paste(c("Restor"),collapse = "|"),replacement = "NatVeg")
+    
+    transition$from <-   gsub(transition$from,pattern = paste(c("Restor"),collapse = "|"),replacement = "NatVeg")
     
     # summarizing (ta estranho, nao ta mudando muito o n de linhas)
     
-    lu_sum <- lu%>%
+    transition_sum <- transition%>%
       #st_group_by(geometry) %>%
       group_by(Country,ID,from,to,scen,year)%>%
       summarise(area=sum(area))
     
     # salvando gpk
     
-    write.csv(lu_sum,paste0("/dados/projetos_andamento/TRADEhub/Linha_2/land_uses_aggregated_transitions/CSV/rec_",nms_csvs[i]),row.names = F)
+    write.csv(transition_sum,paste0("/dados/projetos_andamento/TRADEhub/Linha_2/land_uses_aggregated_transitions/CSV/rec_",nms_csvs[i]),row.names = F)
+
 }
