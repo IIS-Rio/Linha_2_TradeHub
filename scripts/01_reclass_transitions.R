@@ -62,7 +62,7 @@ for(i in 1:length(gpks)){
   
   # voltando pra wide
   
-  transition_wide <- pivot_wider(lu_long_sum )
+  transition_wide <- pivot_wider(transition_long_sum )
   
   # salvando gpk
   
@@ -123,3 +123,11 @@ for(i in 1:length(csvs)) {
     write.csv(transition_sum,paste0("/dados/projetos_andamento/TRADEhub/Linha_2/land_uses_aggregated_transitions/CSV/rec_",nms_csvs[i]),row.names = F)
 
 }
+
+
+# subset transitions
+# Find column names that contain the pattern "GrsLnd"
+matching_columns <- grep("GrsLnd", names(transition), value = F)
+
+# Subset the dataframe to include only the matching columns
+subset_df <- transition[, c(1,matching_columns)]
