@@ -43,6 +43,7 @@ novas_transicoes <- list()
 for(i in 1:length(transitions_rec_files)){
     
   # abrindo transicao
+  
   transicao <- st_read(transitions_rec_files[i])
   
   area <- st_read(area_total[i])%>%
@@ -104,30 +105,62 @@ for(i in 1:length(transitions_rec_files)){
       trans_area_maior1_ID <- filter(trans_area,ID==IDs[j])
       
       # os valores de area_from tem q ser atualizados. fazer so pra divisao problematica
+      # aqui pode ser >1. se for igual a 1 ai ta certo.
       
       lu_errado <- trans_area_maior1_ID$from[trans_area_maior1_ID$taxa>1]
       
+      # lista vazia pra guardar qndo tem > 1 taxa errada
+      
+      #lista_area_maior_1 <- list() # apagar!
+      
+      if(length(lu_errado)==1){      
+        
       # somar area inicial + ganho area
       
-      area_final <- unique(trans_area_maior1_ID$area_from[trans_area_maior1_ID$from==lu_errado]) + sum(trans_area_maior1_ID$value[trans_area_maior1_ID$to==lu_errado]) 
-    
-    # se decontar conversoes da errado!  
-    #- sum(trans_area_maior1_ID$value[trans_area_maior1_ID$from==lu_errado])
+        area_final <- unique(trans_area_maior1_ID$area_from[trans_area_maior1_ID$from==lu_errado]) + sum(trans_area_maior1_ID$value[trans_area_maior1_ID$to==lu_errado]) 
       
-      # atualizando area apenas da celula com taxa maior zero
+      # se decontar conversoes da errado!  
+      #- sum(trans_area_maior1_ID$value[trans_area_maior1_ID$from==lu_errado])
+        
+        # atualizando area apenas da celula com taxa maior zero
+        
+        trans_area_maior1_ID$area_from[trans_area_maior1_ID$from==lu_errado&trans_area_maior1_ID$taxa>1] <- area_final
+        
+        trans_area_maior1_ID$taxa <- trans_area_maior1_ID$value/trans_area_maior1_ID$area_from
+        
+        # removendo NANS novamente
+        
+        trans_area_maior1_ID$taxa[is.nan(trans_area_maior1_ID$taxa)] <- 0
+        
+        # guardando em lista vazia (rever como indexar aqui")
+        
+        recalculando_taxas[[j]] <- trans_area_maior1_ID
+        #print(c(IDs[j],nrow(trans_area_maior1_ID),j)) # checando
       
-      trans_area_maior1_ID$area_from[trans_area_maior1_ID$from==lu_errado&trans_area_maior1_ID$taxa>1] <- area_final
+      }
       
-      trans_area_maior1_ID$taxa <- trans_area_maior1_ID$value/trans_area_maior1_ID$area_from
-      
-      # removendo NANS novamente
-      
-      trans_area_maior1_ID$taxa[is.nan(trans_area_maior1_ID$taxa)] <- 0
-      
-      # guardando em lista vazia (rever como indexar aqui")
-      
-      recalculando_taxas[[j]] <- trans_area_maior1_ID
-      #print(c(IDs[j],nrow(trans_area_maior1_ID),j)) # checando
+      else{
+        
+        for(uso in 1:length(lu_errado)){
+          
+          area_final <- unique(trans_area_maior1_ID$area_from[trans_area_maior1_ID$from==lu_errado[uso]]) + sum(trans_area_maior1_ID$value[trans_area_maior1_ID$to==lu_errado[uso]])
+          
+          trans_area_maior1_ID$area_from[trans_area_maior1_ID$from==lu_errado[uso]&trans_area_maior1_ID$taxa>1] <- area_final
+          
+          trans_area_maior1_ID$taxa <- trans_area_maior1_ID$value/trans_area_maior1_ID$area_from
+          
+          # removendo NANS novamente
+          
+          trans_area_maior1_ID$taxa[is.nan(trans_area_maior1_ID$taxa)] <- 0
+          
+          #lista_area_maior_1[[uso]] <- trans_area_maior1_ID
+        
+        }
+        
+        #trans_area_maior1_ID_combined <- do.call(rbind,lista_area_maior_1)
+        # guardando em lista vazia (rever como indexar aqui")
+        recalculando_taxas[[j]] <- trans_area_maior1_ID
+      }
     
     }
     
