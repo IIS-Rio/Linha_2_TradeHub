@@ -16,71 +16,46 @@ library(dplyr)
 #library(tmap)
 #-------------------------------------------------------------------------------
 
-# baixar solo 3 3 camadas
+# baixar solo 3 3 camadas SOC
 
 #Note the CRS of stder. As the ISRIC layers use the Homolosine projection, we need to reproject our layer using the sf library:
 
 # pro brasil todo nao ta indo. tentar por bioma(cer=3,ma=4,pampa=5,pantanal=6)
 igh='+proj=igh +lat_0=0 +lon_0=0 +datum=WGS84 +units=m +no_defs'
 #br <- read_country()# Br todo
-am <- read_amazon() # amazonia legal
-am_igh <- st_transform(am, igh)
-cer <- read_biomes()%>% # cerrado
-  filter(code_biome==3)
-cer_igh <- st_transform(cer, igh)
-# pegar sul e nordeste
-ma <- read_biomes()%>% # mata atlantica
-  filter(code_biome==4)
-ma_igh <- st_transform(ma, igh)
-pam <- read_biomes()%>% # pampa
-  filter(code_biome==5)
-pam_igh <- st_transform(pam, igh)
-#SP <- read_state(code_state = 35) # teste pra SP
-# projecao dos dados de soc
-#br_igh <- st_transform(br, igh)
-#SP_igh <- st_transform(SP, igh)
-am_igh <- st_transform(am, igh)
+#am <- read_amazon() # amazonia legal
 
-# inserindo em lista pra fazer loop
+biomes <- read_biomes() # cerrado
+biomes_igh <- st_transform(biomes, igh)
 
-regioes <- list(am_igh,cer_igh,ma_igh,pam_igh)
-regioes_nm <- c("legal_am","cerrado","ma","pampa")
+regioes_nm <- c("am","caat","cer","ma","pampa","pantanal")
 
-# lista de profundidades (15-30 foi na unha!)
+# lista de profundidades 
 
-profundidades <- c("0-5cm","5-15cm")
-c=1
+profundidades <- c("0-5cm","5-15cm","15-30cm")
 
-for(reg in regioes){
-  for(prof in profundidades){
+# variavel de interesse
+# soc = # soil organic carbon 
+# phh2o = pH
+
+voi = "phh2o"
+
+for(i in 1:length(regioes_nm)){
+  for(j in 1:length(profundidades)){
+    
+    reg <- biomes_igh[i,]
     #bounding box of our area of interest:
-    # br - am
     # variavel interesse
-    voi = "soc" # soil organic carbon 
-    depth = prof
+    #voi = "soc" 
+    depth = profundidades[j]
     quantile = "mean"
-    # Calculate the non-overlapping part of Brazil (didn't work so will get biomes and than mosaic)
-    #br_without_am <- st_difference( br,am) nao funfou
-    #bbox <- st_bbox(SP_igh)
-    #bbox <- st_bbox(br_igh)
-    #bbox <- st_bbox(am_igh)
-    #bbox <- st_bbox(br_without_am)
-    #bbox <- st_bbox(cer_igh)
-    #bbox <- st_bbox(ma_igh)
-    #bbox <- st_bbox(pam_igh)
+    
     bbox <- st_bbox(reg)
-    #
+    
     # Create a rectangular polygon from the bounding box
-    #bbox_polygon <- st_as_sfc(st_bbox(bbox))
-    
-    # Plot the bounding box
-    # plot(bbox_polygon, col = "blue", border = "blue", lwd = 2, xlim = c(0, 1), ylim = c(0, 1),add=T)
-    
     
     # Now, let’s use the bbox data to define the boundary box limits as used by the GDA libraryL. By the way, this is one of the trickiest parts of using GDAL.
     
-    ## ul means upper left
-    ## lr means lower right
     ulx = bbox$xmin
     uly = bbox$ymax
     lrx= bbox$xmax
@@ -97,22 +72,14 @@ for(reg in regioes){
     
     l1 <- newXMLNode("WCS_GDAL")
     l1.s <- newXMLNode("ServiceURL", wcs, parent=l1)
-    l1.l <- newXMLNode("CoverageName", paste0("soc_",prof,"_mean"), parent=l1)
+    l1.l <- newXMLNode("CoverageName", paste0(voi,"_",depth,"_mean"), parent=l1)
     
     # Save to local disk
-    xml.out = "/dados/projetos_andamento/TRADEhub/Linha_2/soil_data/soc/sg.xml"
+    xml.out = paste0("/dados/projetos_andamento/TRADEhub/Linha_2/soil_data/",voi,"/sg.xml")
     
     saveXML(l1, file = xml.out)
     
-    # Download raster as GeoTIFF (Warning: it can be large!)
-    
-    # file.out <- "/dados/projetos_andamento/TRADEhub/Linha_2/soil_data/soc/legal_am_soc_15-30cm_mean.tif"
-    # 
-    # file.out <- "/dados/projetos_andamento/TRADEhub/Linha_2/soil_data/soc/cerrado_soc_15-30cm_mean.tif"
-    # 
-    # file.out <- "/dados/projetos_andamento/TRADEhub/Linha_2/soil_data/soc/ma_soc_15-30cm_mean.tif"
-    
-    file.out <- paste0("/dados/projetos_andamento/TRADEhub/Linha_2/soil_data/soc/",regioes_nm[c],"_soc_",prof,"_mean.tif")
+        file.out <- paste0("/dados/projetos_andamento/TRADEhub/Linha_2/soil_data/",voi,"/",regioes_nm[i],"_",voi,"_",depth,"_mean.tif")
     
     gdal_translate(xml.out, file.out,
                    tr=c(250,250), projwin=bb,
@@ -121,15 +88,6 @@ for(reg in regioes){
     
     
   }
-  
-  c=c+1
 }
-# plot(st_geometry(br_igh))
-# plot(raster("/dados/projetos_andamento/TRADEhub/Linha_2/soil_data/soc/cerrado_soc_15-30cm_mean.tif"),add=T)
-# plot(raster("/dados/projetos_andamento/TRADEhub/Linha_2/soil_data/soc/legal_am_soc_15-30cm_mean.tif"),add=T)
-# plot(raster("/dados/projetos_andamento/TRADEhub/Linha_2/soil_data/soc/ma_soc_15-30cm_mean.tif"),add=T)
-# 
-# plot(raster("/dados/projetos_andamento/TRADEhub/Linha_2/soil_data/soc/pampa_soc_15-30cm_mean.tif"),add=T)
 
 
-    

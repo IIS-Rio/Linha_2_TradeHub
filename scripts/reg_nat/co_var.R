@@ -3,12 +3,12 @@
 # The global potential for natural regeneration in deforested tropical regions [WWW Document], 2023. https://doi.org/10.21203/rs.3.rs-3235955/v1
 
 # variaveis + importantes sao biofísicas (top 10:
-# 1. local forest density
+# 1. local forest density # tem q fazer pros pontos q tem regeneracao
 # 2. dist. nearest forest
-# 3. soil organic carbon density and soil pH
-# 4. 4 biolcim variables (4 eixos pca com 19 bioclim do worldclim)
+# 3. soil organic carbon density and soil pH -OK
+# 4. 4 biolcim variables (5 eixos pca com 19 bioclim do worldclim) - ok
 # 5. land use/cover
-# 6. biome
+# 6. biome # tem q ver se tem amostra em todos os biomas
 
 # forest density pode ser um moving window focado em cada celula do grid num buffer de 1km. No paper usaram forest density in 1km2. oq ja eh a celula do grid. ja tenho!
 # calcular dist. veg nat mais proxima! facil!
