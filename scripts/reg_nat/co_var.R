@@ -53,7 +53,11 @@ hist(dist_veg_m[])
 
 # biomas br pra subir no gee
 
+biomes <- read_biomes(year="2019")%>%
+  filter(!is.na(code_biome))
 
+
+st_write(biomes,"/dados/projetos_andamento/TRADEhub/Linha_2/other_covariables/biomes.shp",append=FALSE)
 
 
 
