@@ -10,6 +10,7 @@ nat_reg_predict <- function(df){
   library(sampler) # amostragem estratificada
   library(randomForestSRC)
   library(tidyverse)
+  library("pROC")
   #-----------------------------------------------------------------------------
   
   
@@ -74,7 +75,15 @@ nat_reg_predict <- function(df){
   predicted <- predict(object = rfModel_full, newdata = test_sc)
   r_full <- caret::R2(pred = predicted$predicted,obs = actual) 
   r_rmse <- caret::RMSE(pred = predicted$predicted,obs = actual)
-  results <- list(model=rfModel_full,r_squared=r_full,rmse=r_rmse)
+  # Create a ROC curve
+  roc_curve <- roc(actual, predicted$predicted)
+  #cat("AUC:", auc(roc_curve), "\n")
+   roc_curve2 = list(
+     auc = auc(roc_curve),  # Include AUC separately
+     curve = roc_curve       # Include the entire ROC curve object if needed
+   )
+   
+  results <- list(model=rfModel_full,r_squared=r_full,rmse=r_rmse,roc_curve)
   
   return(results)
   

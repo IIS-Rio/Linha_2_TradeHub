@@ -40,5 +40,6 @@ veg_mosm <- mask(veg_mosc,Br)
 
 veg_mosm <- veg_mosm/1000
 
+plot(veg_mosm)
 
-writeRaster(veg_mosm,"/dados/projetos_andamento/TRADEhub/Linha_2/other_covariables/veg_distance_Br_faltaMAPANT_km.tif", gdal=c("COMPRESS=DEFLATE"))
+writeRaster(veg_mosm,"/dados/projetos_andamento/TRADEhub/Linha_2/other_covariables/veg_distance_Br_km.tif", gdal=c("COMPRESS=DEFLATE"))

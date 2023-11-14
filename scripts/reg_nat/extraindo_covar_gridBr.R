@@ -1,8 +1,6 @@
-
 # probabilidade reg nat
 
-RegNat <- st_read("/dados/projetos_andamento/TRADEhub/Linha_2/prob_reg_natural/mapbiomas/reg_nat__2000_2022_sp.shp")
-
+Br_grid <- st_read("/dados/projetos_andamento/TRADEhub/Linha_2/input_data/Br_grid_points.shp")
 
 covar <- list()
 
@@ -70,66 +68,22 @@ names(covar_unlst) <- var_names
 
 # matriz vazia
 
-f <- function(x) terra::extract(x, RegNat,ID=F)
+f <- function(x) terra::extract(x, Br_grid,ID=F)
 
 extracted_values <- lapply(covar_unlst,f)
 
 m <- do.call(cbind, extracted_values)
 
-names(m) <- var_names
+head(m)
 
-df_final <- cbind(RegNat,m)
+m2 <- m
 
+names(m2) <- var_names
 
-df_final_dist0 <- filter(df_final,veg_dist==0)
-
-summary(as.factor(df_final_dist0$r___200))
-
-# coberturas pra excluir:
-
-# agua e outros usos pra excluir
-# area urbana
-# vegetacao nativa no ano de 2000 (inicio da contagem!). melhor nao excluir, pq pega um monte de ponto de regeneracao tb!
+df_final <- cbind(Br_grid,m2)
 
 
-excluir <- list()
+st_geometry(df_final) <- "NULL"
 
-agua <- rast("/dados/projetos_andamento/TRADEhub/Linha_2/other_covariables/agua_outros_usos_excluir_Brasil_2020.tif")
-
-excluir[[1]] <- agua
-
-area_urbana <- rast("/dados/projetos_andamento/TRADEhub/Linha_2/other_covariables/area_urbana_Brasil_2020.tif")
-
-excluir[[2]] <- area_urbana
-
-
-areas_excluir <- lapply(excluir,f)
-
-excluir_df <-do.call(cbind, areas_excluir)
-
-names(excluir_df) <- c("agua","area_urbana")
-
-df_final <- cbind(df_final,excluir_df)
-
-# filtrar so agua e area urbana==0
-
-df_final_filter <- df_final%>%
-  filter(agua==0,area_urbana==0)
-
-# por enquanto salvar assim, mas falta varios pontos de dist veg!
-
-# jogar fora geometria
-
-st_geometry(df_final_filter) <- NULL
-
-df_final_filter_noNA <- df_final_filter %>%
-  filter(complete.cases(.))
-
-
-names(df_final_filter_noNA)[1] <- "reg_0_1"
-
-
-write.csv(df_final_filter_noNA,"/dados/projetos_andamento/TRADEhub/Linha_2/input_data/df_run_missingdistveg.csv",row.names = F)
-
-write.csv(df_final_filter_noNA,"/dados/projetos_andamento/TRADEhub/Linha_2/input_data/df_completo.csv",row.names = F)
+write.csv(df_final,"/dados/projetos_andamento/TRADEhub/Linha_2/input_data/df_Br_to_extrapolate.csv",row.names = F)
 
