@@ -37,3 +37,15 @@ summary(values_at_points)
 ggscatter(values_at_points,x="meu modelo",y="modelo publicado")
 
 cor(values_at_points$`meu modelo`,values_at_points$`modelo publicado`)
+
+
+par(mfrow = c(1, 2))
+
+reg_nat <- rast("/dados/projetos_andamento/TRADEhub/Linha_2/prob_reg_natural/mapbiomas/model_output/prob_reg_Br_1kmv02.tif")
+
+
+reg_nat2 <-rast("/dados/projetos_andamento/TRADEhub/Linha_2/prob_reg_natural/paper_renatinho/mosaico/ressampled_100m/nat_reg_mos.tiff") 
+
+plot(reg_nat)
+
+plot(reg_nat2)
