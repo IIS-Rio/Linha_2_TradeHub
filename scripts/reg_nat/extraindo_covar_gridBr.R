@@ -1,6 +1,9 @@
+library(sf)
+library(terra)
+
 # probabilidade reg nat
 
-Br_grid <- st_read("/dados/projetos_andamento/TRADEhub/Linha_2/input_data/Br_grid_points.shp")
+Br_grid <- st_read("/dados/projetos_andamento/TRADEhub/Linha_2/input_data/Br_grid_points2.shp")
 
 covar <- list()
 
@@ -83,7 +86,8 @@ names(m2) <- var_names
 df_final <- cbind(Br_grid,m2)
 
 
-st_geometry(df_final) <- "NULL"
+# Drop the geometry column
+df_final <- st_drop_geometry(df_final)
 
 write.csv(df_final,"/dados/projetos_andamento/TRADEhub/Linha_2/input_data/df_Br_to_extrapolate.csv",row.names = F)
 

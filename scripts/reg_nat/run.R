@@ -8,10 +8,10 @@ df <- read.csv("/dados/projetos_andamento/TRADEhub/Linha_2/input_data/df_complet
 m1 <- nat_reg_predict(df)
 
 # parece q ficou bem merda. falta tb calcular auc e curva roc!
-plot(m1[[4]])
-cat("AUC:", auc(m1[[4]]), "\n")
-
-plot(m1[[4]], main = "ROC Curve", col = "blue", lwd = 2)
+# plot(m1[[4]])
+# cat("AUC:", auc(m1[[4]]), "\n")
+# 
+# plot(m1[[4]], main = "ROC Curve", col = "blue", lwd = 2)
 #library("pROC")
 
 
@@ -87,3 +87,8 @@ prob_reg <- rastericppprob_reg <- rasterize(Br_gridNAclean_vec,rbase,field="pred
 plot(prob_reg)
 
 writeRaster(prob_reg,"/dados/projetos_andamento/TRADEhub/Linha_2/prob_reg_natural/mapbiomas/model_output/prob_reg_Br_1km.tif",gdal=c("COMPRESS=DEFLATE"))
+
+prob_reg <- rast("/dados/projetos_andamento/TRADEhub/Linha_2/prob_reg_natural/mapbiomas/model_output/prob_reg_Br_1km.tif")
+
+plot(prob_reg)
+
