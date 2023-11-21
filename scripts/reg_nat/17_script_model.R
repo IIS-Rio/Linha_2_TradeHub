@@ -1,7 +1,7 @@
-# esse script é usado no script 02 e nao precisa ser aberto
 
-
-nat_reg_predict <- function(df){
+nat_reg_predict <- function(df,var_cat){
+  
+  # var_cat tem que ser "biome" ou "fitofisionomias_Br"!!!
   
   # pacotes --------------------------------------------------------------------
   
@@ -37,6 +37,8 @@ nat_reg_predict <- function(df){
   train_sc$biome <- as.factor(train_sc$biome)
   test_sc$biome <- as.factor(test_sc$biome)
   
+  train_sc$fitofisionomias_Br <- as.factor(train_sc$fitofisionomias_Br)
+  test_sc$fitofisionomias_Br <- as.factor(test_sc$fitofisionomias_Br)
   # aplicando scale pras variaveis continuas 
   
   
@@ -54,8 +56,20 @@ nat_reg_predict <- function(df){
   train_sc <- cbind(train_sc[, -continuous_variables], train_sc_continuous)
   test_sc <- cbind(test_sc[, -continuous_variables], test_sc_continuous)
   
-  excluir <- c("x","y","agua","area_urbana")
-  # excluindo variaveis correlacionadas e resposta
+  if(var_cat=="bioma"){
+  
+  excluir <- c("x","y","agua","area_urbana","fitofisionomias_Br",)
+  
+  }
+  
+  if(var_cat=="fito"){
+    
+    excluir <- c("x","y","agua","area_urbana","biome","reg_0_1")
+    
+    
+  }
+  
+  #excluindo variaveis 
 
   pred_posicao <- unlist(which(!names(train_sc) %in% excluir))
   pred_varnames <- names(train_sc[,pred_posicao])

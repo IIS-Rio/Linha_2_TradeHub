@@ -4,11 +4,14 @@ library(terra)
 
 source("/dados/pessoal/francisco/Linha_2_TradeHub/scripts/reg_nat/17_script_model.R")
 
-df <- read.csv("/dados/projetos_andamento/TRADEhub/Linha_2/input_data/df_completo.csv")
+df <- read.csv("/dados/projetos_andamento/TRADEhub/Linha_2/input_data/df_completo_fito.csv")
+#df1 <- read.csv("/dados/projetos_andamento/TRADEhub/Linha_2/input_data/df_completo.csv")
 
-m1 <- nat_reg_predict(df)
+#m1 <- nat_reg_predict(df = df,)
 
-# plot(m1[[4]])
+m1 <- nat_reg_predict(df = df,var_cat = "fito")
+head(m1$model$xvar)
+#plot(m2[[4]])
 # cat("AUC:", auc(m1[[4]]), "\n")
 # 
 # plot(m1[[4]], main = "ROC Curve", col = "blue", lwd = 2)
@@ -21,12 +24,16 @@ m1 <- nat_reg_predict(df)
 
 # grid completo Br
 
-Br_grid <- fread("/dados/projetos_andamento/TRADEhub/Linha_2/input_data/df_Br_to_extrapolate.csv")
+Br_grid <- fread("/dados/projetos_andamento/TRADEhub/Linha_2/input_data/df_Br_to_extrapolate_fito.csv")
 
-#Br_grid <- Br_grid[,-c(1,2,3,18,19)]
+Br_grid2 <- fread("/dados/projetos_andamento/TRADEhub/Linha_2/input_data/df_Br_to_extrapolate.csv")
 
+Br_grid3 <- cbind(Br_grid,Br_grid2[,c(6:17)])
+
+Br_grid <- Br_grid3
 
 Br_grid$biome <- as.factor(Br_grid$biome)
+Br_grid$fitofisionomias_Br <- as.factor(Br_grid$fitofisionomias_Br)
 
 # so da pra rodar com dados sem NA.
 
@@ -77,9 +84,14 @@ Br_gridNAclean_vec$predicted <- as.numeric(Br_gridNAclean_vec$predicted)
 prob_reg <- rastericppprob_reg <- rasterize(Br_gridNAclean_vec,rbase,field="predicted")
 #plot(prob_reg)
 
-writeRaster(prob_reg,"/dados/projetos_andamento/TRADEhub/Linha_2/prob_reg_natural/mapbiomas/model_output/prob_reg_Br_1kmv02.tif",gdal=c("COMPRESS=DEFLATE"))
+writeRaster(prob_reg,"/dados/projetos_andamento/TRADEhub/Linha_2/prob_reg_natural/mapbiomas/model_output/prob_reg_Br_1kmv03_fito.tif",gdal=c("COMPRESS=DEFLATE"))
 
 # prob_reg <- rast("/dados/projetos_andamento/TRADEhub/Linha_2/prob_reg_natural/mapbiomas/model_output/prob_reg_Br_1km.tif")
 # 
 # plot(prob_reg)
 
+plot(prob_reg)
+
+prob_reg2 <- rast("/dados/projetos_andamento/TRADEhub/Linha_2/prob_reg_natural/mapbiomas/model_output/prob_reg_Br_1kmv02.tif")
+
+plot(prob_reg2)

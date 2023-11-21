@@ -41,7 +41,7 @@ for(b in biomas_buffer$code_biome){
 
   r <- filter(biomas_buffer,code_biome==b)
   vegr <- crop(vegm2,r)
-  vegm <- crop(vegr,r)
+  vegm <- mask(vegr,r)
   dist <- terra::distance(vegm)
   # converter pra int
   #integerRaster <- as.integer(round(values(dist)))
