@@ -43,5 +43,44 @@ for(scen in scens){
  
 }
 
+#-completando soma 1 pros lu regionais -----------------------------------------
 
 
+p <- "/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use_regional"
+
+dirs <- list.files(p)
+
+for(dir in dirs){
+  
+  ls_rstr <- list.files(file.path(p,dir),full.names = T)
+  soma <- sum(rast(ls_rstr))
+  if(minmax(soma)[1]<1){
+    r2complete <- 1-soma
+    # abrir raster other
+    other <- rast(file.path(p,dir,"other.tif"))
+    newother <- other+r2complete
+    writeRaster(newother,file.path(p,dir,"other.tif"),overwrite=T)
+    
+  }else{next}
+}
+
+# completando soma 1 pros cenarios downscaled ----------------------------------
+
+
+p2 <- "/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/2050"
+
+dirs <- list.files(p2)
+
+for(dir in dirs){
+  
+  ls_rstr <- list.files(file.path(p2,dir),full.names = T)
+  soma <- sum(rast(ls_rstr))
+  if(minmax(soma)[1]<1){
+    r2complete <- 1-soma
+    # abrir raster other
+    other <- rast(file.path(p2,dir,"other.tif"))
+    newother <- other+r2complete
+    writeRaster(newother,file.path(p2,dir,"other.tif"),overwrite=T)
+    
+  }else{next}
+}

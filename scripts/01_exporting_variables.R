@@ -64,14 +64,10 @@ otherpj <- project(other,rbase)
 
 final_check <- round(agripj+natvegpj+pasturelandgpj+otherpj,4)#ok arredondando
 
-
-
-
-
-writeRaster(agripj,"/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/baseline_2020/agriculture_Mapbiomas_2020.tif",gdal=c("COMPRESS-DEFLATE"),overwrite=T)
-writeRaster(natvegpj,"/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/baseline_2020/natveg_Mapbiomas_2020.tif",gdal=c("COMPRESS-DEFLATE"),overwrite=T)
-writeRaster(pasturelandgpj,"/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/baseline_2020/pastureland_Mapbiomas_2020.tif",gdal=c("COMPRESS-DEFLATE"),overwrite=T)
-writeRaster(otherpj,"/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/baseline_2020/other_Mapbiomas_2020.tif",gdal=c("COMPRESS-DEFLATE"),overwrite=T)
+writeRaster(agripj,"/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/baseline_2020/agriculture.tif",gdal=c("COMPRESS-DEFLATE"),overwrite=T)
+writeRaster(natvegpj,"/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/baseline_2020/natveg.tif",gdal=c("COMPRESS-DEFLATE"),overwrite=T)
+writeRaster(pasturelandgpj,"/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/baseline_2020/pastureland.tif",gdal=c("COMPRESS-DEFLATE"),overwrite=T)
+writeRaster(otherpj,"/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/baseline_2020/other.tif",gdal=c("COMPRESS-DEFLATE"),overwrite=T)
 
 # hfi --------------------------------------------------------------------------
 

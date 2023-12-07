@@ -17,7 +17,7 @@ crscopy <- rast("/dados/projetos_andamento/TRADEhub/Linha_2/land_uses_downscalle
 crs <- crs(crscopy)
 
 #vegetação, agricultura, pastagem e outros
-usos <- c("natural_vegetation","agriculture","pastureland","other")
+usos <- c("nat_veg","agriculture","pastureland","other")
 
 for(scen in scens){
   # cenarios
@@ -30,11 +30,12 @@ for(scen in scens){
       rtosave <- r[[lu]]
       crs(rtosave) <- crs
       rtosavepj <- project(rtosave,base_r)
+      # faltou adicionar a pasta land_use
       ytosave <- file.path("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata",y)
       dir.create(ytosave)
       scentosave <- file.path(ytosave,scen)
       dir.create(scentosave)
-      writeRaster(rtosavepj,file.path(scentosave,paste0("downscaled_",scen,"_",y,"_",usos[[lu]],".tif")), gdal=c("COMPRESS=DEFLATE"),overwrite=T)
+      writeRaster(rtosavepj,file.path(scentosave,paste0(usos[[lu]],".tif")), gdal=c("COMPRESS=DEFLATE"),overwrite=T)
     
     }
     
