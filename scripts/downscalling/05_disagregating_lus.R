@@ -1,3 +1,5 @@
+library(terra)
+
 # a partir dos rasters fornecidos pelo arthur, separar em usos por cenario
 
 # multiband rasters
@@ -9,6 +11,10 @@ scens <- list.dirs(p,full.names = F,recursive = F)
 rstr_ls <- grep(pattern =paste(scens,collapse = "|") ,x = list.files(p,full.names = T,recursive = T),value = T)
 
 years <- seq(2025,2050,5)
+
+base_r <- rast("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/variables/agbgC_current_tonha_v6.1_BR.tif")
+crscopy <- rast("/dados/projetos_andamento/TRADEhub/Linha_2/land_uses_downscalled/ResultsISS/pa_br_usoterra_mapbiomas8_30m_2020_reclassified_albers_100m.tif")
+crs <- crs(crscopy)
 
 #vegetação, agricultura, pastagem e outros
 usos <- c("natural_vegetation","agriculture","pastureland","other")
@@ -22,11 +28,13 @@ for(scen in scens){
     r <- rast(r_years)
     for(lu in seq_along(usos)){
       rtosave <- r[[lu]]
+      crs(rtosave) <- crs
+      rtosavepj <- project(rtosave,base_r)
       ytosave <- file.path("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata",y)
       dir.create(ytosave)
       scentosave <- file.path(ytosave,scen)
       dir.create(scentosave)
-      writeRaster(rtosave,file.path(scentosave,paste0("downscaled_",scen,"_",y,"_",usos[[lu]],".tif")), gdal=c("COMPRESS=DEFLATE"),overwrite=T)
+      writeRaster(rtosavepj,file.path(scentosave,paste0("downscaled_",scen,"_",y,"_",usos[[lu]],".tif")), gdal=c("COMPRESS=DEFLATE"),overwrite=T)
     
     }
     
