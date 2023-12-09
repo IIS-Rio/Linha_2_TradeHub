@@ -14,7 +14,7 @@ p <- "/dados/projetos_andamento/TRADEhub/Linha_2/results"
   
 # uma pasta por regiao
 
-regioes <- read.csv("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/subregions/dicionario_ecorregioes_ID.csv")
+regioes <- read.csv("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/subregions/dicionario_Cerrado_wwf.csv")
 
 f <- function(x)dir.create(file.path(p,x))
 lapply(regioes$ID,f)
@@ -33,12 +33,15 @@ scen <- list.files("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/
 
 reg <- regioes$ID
 
-dest <- "/dados/projetos_andamento/TRADEhub/Linha_2/results"
-
-
+base <- "/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/baseline_2020"
+source <- "/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use_regional"
+dest <- "/dados/projetos_andamento/TRADEhub/Linha_2/results/"
 # cfg$io$plangea_path = plangea_path
 
 # criando objeto com indices do JSON
+
+# oq precisa ta no base, oq precisa ta no relative e oq precisa ta no future??
+
 
 cfg = jsonlite::fromJSON("/dados/pessoal/francisco/Linha_2_TradeHub/scripts/JSON/L2_ecoregions.json")
 
@@ -46,14 +49,15 @@ cfg = jsonlite::fromJSON("/dados/pessoal/francisco/Linha_2_TradeHub/scripts/JSON
 
 for(i in 1:length(reg)){
   for(j in 1:length(scen)){
-    # tem q adiconar o lugar pra salvar
-    cfg$io$base_path <- paste0(dest,"/",reg[i],"/",scen[j],"/")
     
-    # tem q adicionar a regiao!
+    # definir aqui. testar ser results
+    cfg$io$base_path <- paste0(dest,reg[i],"/",scen[j],"/") #fazer so pra 1 regiao pra ver
+    
+    # aqui seria o caminho uso presente
     cfg$io$lu_relative_path <- paste0("land_use_regional/ecoregion_",reg[i],"/")
     
     
-    # tem q adiconar o cenario, pq pra cada regiao eh pra rodar o cenario
+    # aqui uso futuro
     cfg$io$future_lu_relative_path <- paste0("land_use/2050/",scen[j],"/")
     
     plangea(cfg = cfg)    
@@ -62,6 +66,24 @@ for(i in 1:length(reg)){
   
 }
 
+# parou no 257 nao sei pq: erro:
+
+#Error in harmonize_pa(cfg, file_log = harmonize_log, verbose = verbose,  : 
+# Computed PA have NA values in the master_index
+# Calls: .rs.sourceWithProgress ... eval -> eval -> plangea -> harmonize -> harmonize_pa
+
+# deu errado a mascara ai
 
 
+ecoregions <- rast("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/subregions/ecoregions_wwf_plusCerrado.tif")
+
+legenda <- read.csv("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/subregions/dicionario_Cerrado_wwf.csv")
+
+eco257 <- ecoregions==677
+plot(eco257)
+unique(values(eco257))
+frequencia <- as.data.frame(table(values(ecoregions)))
+
+# tem q ver os q tem freq. mto baixa!
+# usar isso pra filtrar as regioes
 

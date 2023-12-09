@@ -18,8 +18,6 @@ ecoregions <- rast("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/variables
 unique_regions <- unique(values(ecoregions), na.rm = TRUE)
 unique_regions <- unique_regions[!is.nan(unique_regions)]
 
-
-
 for (region_value in unique_regions) {
   # Create a mask for the current region
   region_mask <- ecoregions == region_value

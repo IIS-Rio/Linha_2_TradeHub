@@ -11,11 +11,11 @@
 // INPUT-OUTPUT ----------------------------------------------------------------
 	"io": {
 	  "plangea_path": "/dados/pessoal/francisco/plangea-pkg/",
-	  "base_path": "/dados/projetos_andamento/TRADEhub/Linha_2/results/baseline_2020",
+	  "base_path": "/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/baseline_2020",
 		"rawdata_path":"/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/",
 		"lu_relative_path": "land_use_regional/",
 		"past_lu_relative_path": "",
-		"ecoregions_relative_path": "",
+		"ecoregions_relative_path": "subregions/",
 		"future_lu_relative_path": "",
 		"pa_relative_path": "",
 		"variables_relative_path": "variables/",
@@ -32,7 +32,7 @@
 	"landscape_features": {
 	  "land_use":{
 	    "class_names": ["AGR", "VEG", "PAS", "OTH"],
-	  	"class_types": [  "AGR", "VEG", "PAS", "OTH"],
+	  	"class_types": [  "A", "N", "A", "I"],
 	  	"classes_raster_names":
 	  	["agriculture.tif",
 	  	"natveg.tif",

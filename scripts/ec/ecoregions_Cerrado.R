@@ -36,11 +36,11 @@ eco_Cerr <- st_transform(eco_Cerr,crs = crs(base_r))%>%
 
 eco_Cerr_r <- fasterize(sf = eco_Cerr,raster = base_r,field="SEQUENCIA")
 
-par(mfrow=c(1,2))
-
-plot(eco_Cerr_r)
-plot(base_r==ID_Cerrado$ID)
-plot(base_r)
+# par(mfrow=c(1,2))
+# 
+# plot(eco_Cerr_r)
+# plot(base_r==ID_Cerrado$ID)
+# plot(base_r)
 
 # # transformar no base, onde tem valor no raster de cerrado em NA
 
@@ -52,8 +52,8 @@ base_r2 <- base_r
 base_r2[base_r2==ID_Cerrado$ID] <- NA
 
 
-plot(base_r2)
-plot(base_r)
+# plot(base_r2)
+# plot(base_r)
 
 # transforam em NA, oq for cerrado nas ecorregioes (aqui tem q ser na verdade na onde nao eh No dado anterior)
 
@@ -119,5 +119,22 @@ write.csv(dicionario_Cerrado,"/dados/projetos_andamento/TRADEhub/Linha_2/ec/dici
 nx <- minmax(result_raster2_fcmskpj)  
 rn <- (result_raster2_fcmskpj - nx[1,]) / (nx[2,] - nx[1,])
 
-plot(rn)
-unique(rn)
+# montando dicionario conjunto
+
+head(dicionario_Cerrado)
+head(dicionario_global)
+
+
+names(dicionario_global) <- c("ID","Nome")
+
+dicionario_final <- rbind(dicionario_Cerrado,dicionario_global)
+
+unique_regions <- unique(values(result_raster2_fcmskpj), na.rm = TRUE)
+unique_regions <- unique_regions[!is.nan(result_raster2_fcmskpj)]
+
+
+
+dicionario_final <- dicionario_final %>%
+  filter(ID %in%unique_regions)
+
+write.csv(dicionario_final,"/dados/projetos_andamento/TRADEhub/Linha_2/ec/dicionario_Cerrado_wwf.csv",row.names = F)
