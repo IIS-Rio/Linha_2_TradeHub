@@ -45,9 +45,13 @@ dest <- "/dados/projetos_andamento/TRADEhub/Linha_2/results/"
 
 cfg = jsonlite::fromJSON("/dados/pessoal/francisco/Linha_2_TradeHub/scripts/JSON/L2_ecoregions.json")
 
+#excluir <-frequencia$Freq[frequencia$Freq<862]
+excluir <- c("8","52","276","8","26")
+reg <- reg[!reg %in% excluir]
+
 # tem q adiconar o lugar pra salvar
 
-for(i in 1:length(reg)){
+for(i in 1:length(reg[33:66])){
   for(j in 1:length(scen)){
     
     # definir aqui. testar ser results
@@ -75,15 +79,15 @@ for(i in 1:length(reg)){
 # deu errado a mascara ai
 
 
-ecoregions <- rast("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/subregions/ecoregions_wwf_plusCerrado.tif")
-
-legenda <- read.csv("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/subregions/dicionario_Cerrado_wwf.csv")
-
-eco257 <- ecoregions==677
-plot(eco257)
-unique(values(eco257))
-frequencia <- as.data.frame(table(values(ecoregions)))
-
-# tem q ver os q tem freq. mto baixa!
-# usar isso pra filtrar as regioes
-
+# ecoregions <- rast("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/subregions/ecoregions_wwf_plusCerrado.tif")
+# 
+# legenda <- read.csv("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/subregions/dicionario_Cerrado_wwf.csv")
+# 
+# eco257 <- ecoregions==677
+# plot(eco257)
+# unique(values(eco257))
+# frequencia <- as.data.frame(table(values(ecoregions)))
+# 
+# # tem q ver os q tem freq. mto baixa!
+# # usar isso pra filtrar as regioes
+# 
