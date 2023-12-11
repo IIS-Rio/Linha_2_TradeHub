@@ -46,12 +46,13 @@ dest <- "/dados/projetos_andamento/TRADEhub/Linha_2/results/"
 cfg = jsonlite::fromJSON("/dados/pessoal/francisco/Linha_2_TradeHub/scripts/JSON/L2_ecoregions.json")
 
 #excluir <-frequencia$Freq[frequencia$Freq<862]
-excluir <- c("8","52","276","8","26")
+excluir <- c("13","257","266","68","208","")
 reg <- reg[!reg %in% excluir]
-
+# rodar faltantes
+reg <- reg[38:66]
 # tem q adiconar o lugar pra salvar
 
-for(i in 1:length(reg[33:66])){
+for(i in 1:seq_along(reg)){
   for(j in 1:length(scen)){
     
     # definir aqui. testar ser results
@@ -76,9 +77,9 @@ for(i in 1:length(reg[33:66])){
 # Computed PA have NA values in the master_index
 # Calls: .rs.sourceWithProgress ... eval -> eval -> plangea -> harmonize -> harmonize_pa
 
+# agora parou no 326
+
 # deu errado a mascara ai
-
-
 # ecoregions <- rast("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/subregions/ecoregions_wwf_plusCerrado.tif")
 # 
 # legenda <- read.csv("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/subregions/dicionario_Cerrado_wwf.csv")
