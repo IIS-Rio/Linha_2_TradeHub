@@ -49,10 +49,23 @@ cfg = jsonlite::fromJSON("/dados/pessoal/francisco/Linha_2_TradeHub/scripts/JSON
 excluir <- c("13","257","266","68","208","")
 reg <- reg[!reg %in% excluir]
 # rodar faltantes
-reg <- reg[38:66]
+#reg <- reg[38:66]
+
+#jafoi
+foi <- c(1,102,11:16,168,17,18,19,2,22,23,291,292,293,294,3,301,326,340,39,4,406,48,5,58,59,6,68,7,8,86,87,9,94)
+
+# checando quais falam
+
+# falta <- list.files("/dados/projetos_andamento/TRADEhub/Linha_2/results",recursive = T,pattern = "csv")
+
+
+
+#reg_inedito <- reg[!reg %in% foi]
+#reg <- reg_inedito
+reg <- 352
 # tem q adiconar o lugar pra salvar
 
-for(i in 1:seq_along(reg)){
+for(i in seq_along(reg)){
   for(j in 1:length(scen)){
     
     # definir aqui. testar ser results

@@ -77,11 +77,32 @@ restored_fcnzplus[restored_fcnzplus < 0] = 0
 
 writeRaster(restored_fcnzplus,"/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/lu_diff/restored_current_fcnzplus_2050.tif",gdal=c("COMPRESS=DEFLATE"),overwrite=T)
 
+# natural areas that remained conserved ----------------------------------------
+
+
+conserved_c_baseline <-  natveg_diff_baseline_c_2050
+
+# so oq da zero
+
+conserved_c_baseline[conserved_c_baseline!=0] <- NA
+
+writeRaster(conserved_c_baseline,"/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/lu_diff/natvegconserved_current_baseline_2050.tif",gdal=c("COMPRESS=DEFLATE"),overwrite=T)
+
+conserved_fcnz <-  natveg_diff_fcnz_c_2050
+
+# so oq da zero
+
+conserved_fcnz[conserved_fcnz!=0] <- NA
+
+writeRaster(conserved_fcnz,"/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/lu_diff/natvegconserved_current_fcnz_2050.tif",gdal=c("COMPRESS=DEFLATE"),overwrite=T)
 
 
 
+conserved_fcnzplus <-  natveg_diff_fcnzplus_c_2050
 
+# so oq da zero
 
+conserved_fcnzplus[conserved_fcnzplus!=0] <- NA
 
-
+writeRaster(conserved_fcnzplus,"/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/lu_diff/natvegconserved_current_fcnzplus_2050.tif",gdal=c("COMPRESS=DEFLATE"),overwrite=T)
 
