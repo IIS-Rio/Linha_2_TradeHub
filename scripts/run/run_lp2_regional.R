@@ -31,7 +31,7 @@ lapply(regioes$ID,f)
 
 scen <- list.files("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/2050",pattern = "base")
 
-reg <- regioes$ID
+#reg <- regioes$ID
 
 base <- "/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/baseline_2020"
 source <- "/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use_regional"
@@ -46,13 +46,13 @@ dest <- "/dados/projetos_andamento/TRADEhub/Linha_2/results/"
 cfg = jsonlite::fromJSON("/dados/pessoal/francisco/Linha_2_TradeHub/scripts/JSON/L2_ecoregions.json")
 
 #excluir <-frequencia$Freq[frequencia$Freq<862]
-excluir <- c("13","257","266","68","208","")
-reg <- reg[!reg %in% excluir]
+#excluir <- c("13","257","266","68","208")
+#reg <- reg[!reg %in% excluir]
 # rodar faltantes
 #reg <- reg[38:66]
 
 #jafoi
-foi <- c(1,102,11:16,168,17,18,19,2,22,23,291,292,293,294,3,301,326,340,39,4,406,48,5,58,59,6,68,7,8,86,87,9,94)
+#foi <- c(1,102,11:16,168,17,18,19,2,22,23,291,292,293,294,3,301,326,340,39,4,406,48,5,58,59,6,68,7,8,86,87,9,94)
 
 # checando quais falam
 
@@ -62,7 +62,7 @@ foi <- c(1,102,11:16,168,17,18,19,2,22,23,291,292,293,294,3,301,326,340,39,4,406
 
 #reg_inedito <- reg[!reg %in% foi]
 #reg <- reg_inedito
-reg <- 352
+reg <-c(358,420,421,427,452,469,500,555,557,566,567,579,580,598,623,640,676,677,690,727,761,766,803,820,836)
 # tem q adiconar o lugar pra salvar
 
 for(i in seq_along(reg)){
