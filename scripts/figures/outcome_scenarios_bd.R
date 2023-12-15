@@ -28,7 +28,7 @@ base <- base[base$ecoregion%in% fcnz$ecoregion,]
 base_m <- filter(base,variable=="metrics")
 fcnz_m <- filter(fcnz,variable=="metrics")
 
-# cenario fcnz em funcao do base
+# cenario fcnz em funcao do base 2050 (mudar depois pra 2020)
 
 fcnz_relative <- left_join(fcnz_m,base_m[,c(1,3,4)],by=c("ecoregion","name"))%>%
   dplyr::rename(value_base_2050=value.y,value=value.x)%>%

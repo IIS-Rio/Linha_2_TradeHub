@@ -72,11 +72,13 @@ writeRaster(otherpj,"/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use
 # hfi --------------------------------------------------------------------------
 
 hfi <- rast("/dados/projetos_andamento/TRADEhub/Linha_2/it/hfi_br_2050_ssp2.tif")
+hfi2020 <- rast("/dados/projetos_andamento/TRADEhub/Linha_2/it/hfi_br_2020.tif")
 
 crs(hfi)==crs(otherpj)# ok
 
 writeRaster(hfi,"/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/variables/hfi_br_2050_ssp2.tif",gdal=c("COMPRESS-DEFLATE"),overwrite=T)
 
+writeRaster(hfi2020,"/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/variables/hfi_br_2020.tif",gdal=c("COMPRESS-DEFLATE"),overwrite=T)
 
 
 
