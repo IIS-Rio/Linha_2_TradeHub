@@ -1,0 +1,2 @@
+# pensar num stacked_barplot com uma barra por cenario, stackeados por ecorregiao?
+# nesse caso, as ecorregioes principais precisariam estar destacadas. tipo as responsaveis por x% das emissoes totais! isso eh um norte pra qual direcionar tb nos mapas todos.
