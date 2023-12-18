@@ -13,11 +13,12 @@ p <- "/dados/projetos_andamento/TRADEhub/Linha_2/results"
 tbls <- list.files(p,".csv",full.names = T,recursive = T)
 
 
-base <- grep(pattern = "base",tbls,value = T)
+base_2020 <- grep(pattern = "baseline_2020",tbls,value = T)
 fcnz <- grep(pattern = "fcnz",tbls,value = T)
-
-scenarios <- list(base,fcnz)
-scen_name <- c("base","fcnz")
+base_2050 <- grep(pattern = "base/results/post_processed/tables/global",tbls,value = T)
+base_2050 <- base_2050[!base_2050 %in% base_2020]
+scenarios <- list(base_2020,base_2050,fcnz)
+scen_name <- c("base_2020","base_2050","fcnz")
 # loop pra salvar os resultados
 #c=1
 
@@ -32,11 +33,18 @@ for(i in seq_along(scenarios)){
 
     nms <- list()
 
-    for(n in seq_along(nms_splitted)){
+    if(scen_name[i]!="base_2020"){
+      for(n in seq_along(nms_splitted)){
 
-      nm <- nms_splitted[[n]][7]
-      nms[n] <- nm
+        nm <- nms_splitted[[n]][7]
+        nms[n] <- nm
     }
+      }else{
+          for(n in seq_along(nms_splitted)){
+        
+            nm <- nms_splitted[[n]][8]
+            nms[n] <- nm
+            }}
 
     nms <- unlist(nms)
     names(df_results) <- nms
@@ -62,10 +70,12 @@ for(i in seq_along(scenarios)){
 
     df_cbnd <- unique(df_cbnd)
 
-    # filtrando resultados de interesse
+    # filtrando resultados de interesse (scen baseline so gerou uma linha)
 
+    if(scen_name[i]!="base_2020"){
     df_cbnd <- filter(df_cbnd ,scenario_name=="Future land-use")
-
+}else{df_cbnd <- df_cbnd <- df_cbnd}
+    
     # format long
 
     clmns2keep <- grep(".val",x = names(df_cbnd))
@@ -77,11 +87,11 @@ for(i in seq_along(scenarios)){
       mutate(variable=if_else(name %in% c("VEG","AGR","PAS","area"),true="lulc","metrics"))%>%
       # filtrando dados indesejaveis
       filter(name!="target_value")%>%
-      mutate(year=2050)
+      mutate(year=if_else(scenario=="base_2020",2020,2050))
 
     
 
-  write.csv(df_long2,paste0("/dados/projetos_andamento/TRADEhub/Linha_2/result_tables/plangea_results_ecoregions_",scen_name[i],"_2050.csv"),row.names = F)
+  write.csv(df_long2,paste0("/dados/projetos_andamento/TRADEhub/Linha_2/result_tables/plangea_results_ecoregions_",scen_name[i],".csv"),row.names = F)
 
   #  c=c+1
   
