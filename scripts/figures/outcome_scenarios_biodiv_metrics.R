@@ -12,63 +12,68 @@ library(ggthemes)
 
 ecoregions <- st_read("/dados/projetos_andamento/TRADEhub/Linha_2/results_spatial/ecoregions_bio_metrics.shp")
 
+names(ecoregions) <- c("ecoID","mtc_nm","rt20fcnz","vlbse50","rt20bse","vlfcnz50","rt50fcnz","vlfcnzplus50","rt50fcnzpls","eco_nm","geometry")
 
-# plotando resultados 2050
+ecoregions_df <- st_drop_geometry(ecoregions)
+# logica de todas as metricas. O denominador eh o cenario de referencia logo valores <1 indicam que o denominador eh maior que o cenario q esta sendo comparado. Porem, tem valores negativos e positivos: qndo eh positivo mas o valor absoluto do denominador eh maior, isso indica q houve melhora. se for menor eh piora.
 
-# bd ---------------------------------------------------------------------------
+# qndo da negativo e o valor do denominador eh menor = piora
+# qndo da positivo e o valor do denominador eh maior = melhora
 
-# fcnz
+# por enquanto plotando comparado a base 2050
 
+fcnz <- ecoregions%>%select_at(c(1,2,4,6,7,10))
+#fcnplus <- ecoregions%>%select_at(c(1,2,3,4,7,10))
 
-# checar qndo bd eh menor no cenario 2050
-# qndo isso acontece, o ratio, como % eh uma diferenca entre o ratio e 1
-
-# qndo bd eh maior no cenario 2050 e >1. pra calcular a % eh so usar mesmo o proprio ratio
-# qndo eh menor q 1? eh 1 - o ratio.
-
-# ratio > signfica que base>scen, logo, a reducao eh maior no base!
-# pra mostrar onde eh pior no scen, teria q inverter entao!
-# valores negativos ou positivos nao tem siginificado. so maior ou menor importa. # qndo base eh > q fcnz?
-# qndo os valores do ratio sao negativos ate menor q 1 positivo!
-
-# Specify the number of shades of blue you want
-
-# fcnz: ratio 2050
+# criar uma coluna indicando se houve melhora ou piora
+# os valores agora ficaram estranhos! preciso rever, talvez na hora de fazer os joins!!!
 
 
-num_shades_blue <- length(unique(ecoregions$r_2050_[ecoregions$r_2050_<1]))
-num_shades_red <- length(unique(ecoregions$r_2050_[ecoregions$r_2050_>1]))
-# Generate a range of blue color codes
-# a qntidade de cores muda a legenda, e ferra a transicao.
+fcnz <- fcnz%>%
+  mutate(status=if_else(vlfcnz50>vlbse50,"improved","worsened"))%>%
+  mutate(ratio_sc = case_when(
+    status == "improved" ~ (rt50fcnz - min(rt50fcnz)) / (max(rt50fcnz) - min(rt50fcnz)) ,
+    status == "worsened" ~ (rt50fcnz - min(rt50fcnz)) / (max(rt50fcnz) - min(rt50fcnz))* -1,
+    TRUE ~ NA_real_))
 
-blue_palette <- colorRampPalette(c("lightblue", "darkblue"))(num_shades_blue)
-red_palette <- colorRampPalette(c("orange", "darkred"))(num_shades_red)
+fcnz_df <- st_drop_geometry(fcnz)
 
-blue_palette_legend <- colorRampPalette(c("lightblue", "darkblue"))(15)
-red_palette_legend <- colorRampPalette(c("orange", "darkred"))(5)
+# nesse caso, a proporcionalidade da escala se manteve
 
-color_df_blues <- data.frame(unique_vals=unique(ecoregions$r_2050_[ecoregions$r_2050_<1]))%>%
-    arrange(unique_vals)%>%
-    mutate(col_code=rev(blue_palette))
-
-color_df_red <- data.frame(unique_vals=unique(ecoregions$r_2050_[ecoregions$r_2050_>1]))%>%
-  arrange(unique_vals)%>%
-  mutate(col_code=(red_palette))
-
-#combine blues and reds
-
-color_df_fcnz_ratio2050 <- rbind(color_df_blues,color_df_red)
-
-
-# create id column to combine spatial with colors
-
-color_df_fcnz_ratio2050$unique_vals <- as.numeric(color_df_fcnz_ratio2050$unique_vals)
-
-color_df_fcnz_ratio2050$ID_fcnz <- round(color_df_fcnz_ratio2050$unique_vals,5)
-
-ecoregions$ID_fcnz <- round(ecoregions$r_2050_,5)
-
-ecoregions2 <- left_join(ecoregions,color_df_fcnz_ratio2050[,2:3])
+# num_shades_blue <- length(unique(ecoregions$r_2050_[ecoregions$r_2050_<1]))
+# num_shades_red <- length(unique(ecoregions$r_2050_[ecoregions$r_2050_>1]))
+# 
+# # Generate a range of blue color codes
+# # a qntidade de cores muda a legenda, e ferra a transicao.
+# 
+# blue_palette <- colorRampPalette(c("lightblue", "darkblue"))(num_shades_blue)
+# red_palette <- colorRampPalette(c("orange", "darkred"))(num_shades_red)
+# 
+# blue_palette_legend <- colorRampPalette(c("lightblue", "darkblue"))(15)
+# red_palette_legend <- colorRampPalette(c("orange", "darkred"))(5)
+# 
+# color_df_blues <- data.frame(unique_vals=unique(ecoregions$r_2050_[ecoregions$r_2050_<1]))%>%
+#     arrange(unique_vals)%>%
+#     mutate(col_code=rev(blue_palette))
+# 
+# color_df_red <- data.frame(unique_vals=unique(ecoregions$r_2050_[ecoregions$r_2050_>1]))%>%
+#   arrange(unique_vals)%>%
+#   mutate(col_code=(red_palette))
+# 
+# #combine blues and reds
+# 
+# color_df_fcnz_ratio2050 <- rbind(color_df_blues,color_df_red)
+# 
+# 
+# # create id column to combine spatial with colors
+# 
+# color_df_fcnz_ratio2050$unique_vals <- as.numeric(color_df_fcnz_ratio2050$unique_vals)
+# 
+# color_df_fcnz_ratio2050$ID_fcnz <- round(color_df_fcnz_ratio2050$unique_vals,5)
+# 
+# ecoregions$ID_fcnz <- round(ecoregions$r_2050_,5)
+# 
+# ecoregions2 <- left_join(ecoregions,color_df_fcnz_ratio2050[,2:3])
 
 # plotando maapa ---------------------------------------------------------------
 
@@ -78,24 +83,31 @@ Br <- read_country(2019)%>%
   mutate(dissolve=1)%>%
   group_by(dissolve)%>%
   summarise()%>%
-  st_transform(st_crs(ecoregions2))
+  st_transform(st_crs(ecoregions))
 
 biomes <- st_read("/dados/projetos_andamento/TRADEhub/Linha_2/other_covariables/biomes.shp")
 
+# ufa ok!!
 
-plot_fcnz <- ecoregions2%>%
+plot_fcnz <- fcnz%>% #ecoregions2
   ggplot() +
   geom_sf(data = Br, color = "black", fill = NA) +
-  geom_sf( aes(fill = col_code), color = "transparent") +
+  geom_sf( aes(fill = ratio_sc), color = "transparent") + # era col_code
   geom_sf(data = biomes, color = "black",fill=NA)+
-  scale_fill_identity() +
+  #scale_fill_identity() +
+  scale_fill_gradient2(low = "red", mid = "gray", high = "blue", midpoint = 0)+
   #scale_fill_manual(values = ecoregion_vec2$col_code ) +
   #ggtitle("fcnz")+
   labs( title = "fcnz", fill = "Legend Title" ) +
   #guides(fill = guide_legend(title = "Ratio Legend"))+
   theme_map()+
   theme(plot.margin = margin(t = 0, r = 0, b = 0, l = 0,"cm"))+
-  facet_wrap("mtrc_nm")
+  facet_wrap("mtc_nm")
+
+
+# padroes tao estranhos, caguei na hora de nomear as colunas!!
+
+
 
 # tem q ser isso pra legenda, e o de cima pra plotar!
 

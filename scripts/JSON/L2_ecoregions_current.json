@@ -279,7 +279,7 @@
 	    "run_module": true,
 	    "include_lu_cols": true,
 	     "use_future_scenario": false,
-	     "make_cumulative_table": false,
+	     "make_cumulative_table": true,
 	     "future_land_use": {
          "class_names": ["AGR", "VEG", "PAS", "OTH"],
 	  	   "class_types": [  "A",   "N",   "A",   "I"],
