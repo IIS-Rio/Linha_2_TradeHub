@@ -26,8 +26,8 @@ fcnzplus <- grep(pattern = "fcplusnz",tbls,value = T)
 base_2050 <- grep(pattern = "base",tbls,value = T)
 base_2050 <- grep(pattern = "baseline_2020",base_2050,value = T,invert = T)#tem repetido
 
-scenarios <- list(base_2020,base_2050,fcnz,fcnzplus)
-scen_name <- c("base_2020","base_2050","fcnz","fcnzplus")
+scenarios <- list(base_2050,fcnz,fcnzplus)
+scen_name <- c("base_2050","fcnz","fcnzplus")
 # loop pra salvar os resultados
 #c=1
 

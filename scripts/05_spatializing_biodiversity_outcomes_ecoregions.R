@@ -31,6 +31,7 @@ length(unique(base_2050_m$ecoregion))
 fcnz_m <- filter(fcnz,variable=="metrics")
 length(unique(fcnz_m$ecoregion))
 fcnzplus_m <- filter(fcnzplus,variable=="metrics")
+length(unique(fcnzplus_m$ecoregion))
 
 # 12,13,2,68 parece nao ter no base 2020 e base 2050, mas ta erraod, pq tem tabelas
 # rever!!!nao tem mesmo no baseline 2020! descobrir pq!
@@ -45,8 +46,8 @@ fcnzplus_m <- filter(fcnzplus,variable=="metrics")
 
 # esperar valores corretos 2020, por enquanto fazer com 2050
 
-base_relative <- left_join(base_2050_m,base_2020_m[,c(1,3,4)],by=c("ecoregion","name"))%>%
-  dplyr::rename(value_base_2020=value.y,value=value.x)%>%
+base_relative <- left_join(base_2050_m,base_2020_m[,c(1,3,8)],by=c("ecoregion","name"))%>%
+  dplyr::rename(value_base_2020=value_2020)%>%
   #limpa na
   filter(!is.na(value_base_2020))%>%
   # foca so em biodiv%>%
@@ -55,19 +56,38 @@ base_relative <- left_join(base_2050_m,base_2020_m[,c(1,3,4)],by=c("ecoregion","
   mutate(ratio_2020_base=(value/value_base_2020))%>%
   rename(valuebase50=value)
 
+summary(base_relative)
+length(unique(base_relative$ecoregion)) # 60 - tem 2 faltando!
 
-fcnz_relative <- left_join(fcnz_m,base_2020_m[,c(1,3,4)],by=c("ecoregion","name"))%>%
-  dplyr::rename(value_base_2020=value.y,value=value.x)%>%
+# pra excluir
+#excluir <- c(13,257,266,68,208,677,326) 
+# vou ter q recalcular metricas pra regiao 102(it parece gerar problemas)
+
+fcnz_relative <- left_join(fcnz_m,base_2020_m[,c(1,3,8)],by=c("ecoregion","name"))%>%
+  dplyr::rename(value_base_2020=value_2020)%>%
   #limpa na
   filter(!is.na(value_base_2020))%>%
   # foca so em biodiv%>%
   filter(!name %in% c("cb.val","oc.val"))%>%
   # calculating ratio
-  mutate(ratio_2020_fcnz=(value/value_base_2020))
+  mutate(ratio_2020_fcnz=(value/value_base_2020))%>%
+  rename(valuefcnz=value)
 
-# tem diferencas ainda no tamanho das tabelas, isso precisa sumir depois q tiver rodado todas!
 
-length(unique(fcnz_relative$ecoregion)) # 56
+length(unique(fcnz_relative$ecoregion)) # 58 - tem 2 faltando!
+
+fcnzplus_relative <- left_join(fcnzplus_m,base_2020_m[,c(1,3,8)],by=c("ecoregion","name"))%>%
+  dplyr::rename(value_base_2020=value_2020)%>%
+  #limpa na
+  filter(!is.na(value_base_2020))%>%
+  # foca so em biodiv%>%
+  filter(!name %in% c("cb.val","oc.val"))%>%
+  # calculating ratio
+  mutate(ratio_2020_fcnzplus=(value/value_base_2020))%>%
+  rename(valuefcnzplus=value)
+
+summary(fcnzplus_relative)
+length(unique(fcnzplus_relative$ecoregion)) # 60!
 
 # abrindo raster ecoregioes
 
@@ -77,24 +97,33 @@ ecoregion_vec <- as.polygons(ecoregion)
 
 # espacializando razoes entre 2020 e 2050 --------------------------------------
 
-# associar valores a cada ecorregiao one to many
 
 ecoregion_vec2 <- st_as_sf(ecoregion_vec)
 
-# fcnz
-ecoregion_vec2 <- st_as_sf(left_join(fcnz_relative,ecoregion_vec2,by = join_by(ecoregion==focal_modal) ))
+# baseline
 
+# ecoregion_vec2 <- st_as_sf(left_join(fcnz_relative,ecoregion_vec2,by = join_by(ecoregion==focal_modal) ))
 
+ecoregion_vec2 <- st_as_sf(left_join(base_relative,ecoregion_vec2,by = join_by(ecoregion==focal_modal) ))
 
-# baseline - aqui aparece os NAs!!
+summary(ecoregion_vec2)
 
-ecoregion_vec2 <- st_as_sf(left_join(ecoregion_vec2,base_relative,by = join_by(ecoregion,name) ))
+# fcnz (enquanto nao tiver completo, isso aqui vai continuar reduzindo n linhas!)
 
-ecoregion_vec2df <- st_drop_geometry(ecoregion_vec2)
+ecoregion_vec2 <- st_as_sf(left_join(fcnz_relative,ecoregion_vec2,by = join_by(ecoregion,name) ))
 
+summary(ecoregion_vec2)
+
+# fcnz plus
+
+ecoregion_vec2 <- st_as_sf(left_join(ecoregion_vec2,fcnzplus_relative,by = join_by(ecoregion,name) ))
 # limpando df
 
-var2keep <- c("valuebase50","ecoregion","name","ratio_2020_base","ratio_2020_fcnz")
+summary(ecoregion_vec2)
+
+var2keep <- c("value_base_2020","valuebase50","ecoregion","name","ratio_2020_base","ratio_2020_fcnz","ratio_2020_fcnzplus")
+
+#,"valuefcnzplus","valuefcnz"
 
 ecoregion_vec2save <- ecoregion_vec2[,which(names(ecoregion_vec2)%in% var2keep)]
 
@@ -128,14 +157,6 @@ fcnzplus_relative2050 <- left_join(fcnzplus_m,base_2050_m[,c(1,3,4)],by=c("ecore
 
 summary(fcnzplus_relative2050)
 
-# posicao colunas ecorregion, name e value base 2050: 1,3,8
-
-# isso aqui adiciona NAs!!
-
-summary(fcnz_relative2050[,c(1,3,4,8)])
-summary(ecoregion_vec2save)
-
-
 ecoregion_vec2save <- st_as_sf(left_join(ecoregion_vec2save,fcnz_relative2050[,c(1,3,4,8)],by = join_by(ecoregion,name) ))
 
 
@@ -145,8 +166,6 @@ ecoregion_vec2save <- st_as_sf(left_join(ecoregion_vec2save,fcnzplus_relative205
 
 summary(ecoregion_vec2save)
 
-ecoregion_vec2save2 <- st_drop_geometry(ecoregion_vec2save)
-
 # incluindo nome ecorregiao!
 
 dicionario <- read.csv("/dados/projetos_andamento/TRADEhub/Linha_2/ec/dicionario_Cerrado_wwf.csv")
@@ -155,17 +174,19 @@ ecoregion_vec2save <- left_join(ecoregion_vec2save,dicionario,by=join_by(ecoregi
 
 # ajuste nomes
 
-names(ecoregion_vec2save)[c(2,10)] <- c("metric_nm","ecor_nm")
+names(ecoregion_vec2save)[c(2,12)] <- c("metric_nm","ecor_nm")
 
 
 # ajustando nomes pra salavar
 
-names(ecoregion_vec2save) <- c("ecoID","mtc_nm","rt20fcnz","vlbse50","rt20bse","vlfcnz50","rt2050fcnz","vlfcnzplus50","rt50fcnzpls","eco_nm","geometry")
+# names(ecoregion_vec2save) <- c("ecoID","mtc_nm","rt20fcnz","vlbse50","rt20bse","vlfcnz50","rt2050fcnz","vlfcnzplus50","rt50fcnzpls","eco_nm","geometry")
 
+names(ecoregion_vec2save) <- c("ecoID","mtc_nm","rt20fcnz","vlbse50","rt20bse","vlbse20","rt20fcnzplus","vlfcnz50","rt50fcnz","vlfcnzplus50","rt50fcnzplus","eco_nm","geometry" )          
 summary(ecoregion_vec2save)
 
 # ta dando erro pra salvar!!pq!!!
 
-st_write(ecoregion_vec2save,"/dados/projetos_andamento/TRADEhub/Linha_2/results_spatial/ecoregions_bio_metrics.shp",append=FALSE)
+st_write(ecoregion_vec2save,"/dados/projetos_andamento/TRADEhub/Linha_2/results_spatial/ecoregions_bio_metricsv02.shp",append=FALSE)
 
 plot(st_geometry(ecoregion_vec2save))
+
