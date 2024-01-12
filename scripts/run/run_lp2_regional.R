@@ -29,7 +29,7 @@ regioes <- read.csv("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/subregio
 
 # piloto com 1 scenario so
 
-scen <- list.files("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/2050",pattern = "fcplusnz")
+scen <- list.files("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/2050",pattern = "fcnz")
 
 #reg <- regioes$ID
 
@@ -48,9 +48,10 @@ excluir <- c(13,257,266,68,208,677,326)
 
 reg <- reg[!reg %in% excluir]
 
-# nao rodar de novo as que ja foram
+# reg so pra ecoreg. q faltaram
 
-#reg2 <- reg[which(reg==291):60]
+reg <- c(690,727)
+
 
 # definindo tasks
 
