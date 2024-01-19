@@ -38,4 +38,5 @@ for (region_value in unique_regions) {
 
 
 
-
+FILES <- list.files(path = "/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use_regional",pattern = "natveg",recursive = T,full.names = T)
+file.remove(FILES)

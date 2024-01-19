@@ -3,14 +3,15 @@
 # pacotes ----------------------------------------------------------------------
 
 devtools::load_all("/dados/pessoal/francisco/plangea-pkg/")
-
 library(jsonlite)
 
 #-------------------------------------------------------------------------------
 
+# rodando de novo depois de corrigir baseline 2020
+
 # caminho pra salvar as analises por regiao
 
-p <- "/dados/projetos_andamento/TRADEhub/Linha_2/results"
+p <- "/dados/projetos_andamento/TRADEhub/Linha_2/results_up/"
   
 # uma pasta por regiao
 
@@ -34,8 +35,9 @@ scen <- list.files("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/
 #reg <- regioes$ID
 
 base <- "/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/baseline_2020"
+# precisa recortar esse de novo!!
 source <- "/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use_regional"
-dest <- "/dados/projetos_andamento/TRADEhub/Linha_2/results/"
+dest <- "/dados/projetos_andamento/TRADEhub/Linha_2/results_up/"
 
 cfg = jsonlite::fromJSON("/dados/pessoal/francisco/Linha_2_TradeHub/scripts/JSON/L2_ecoregions.json")
 
@@ -50,7 +52,7 @@ reg <- reg[!reg %in% excluir]
 
 # reg so pra ecoreg. q faltaram
 
-reg <- c(690,727)
+#reg <- c(690,727)
 
 
 # definindo tasks
@@ -75,15 +77,27 @@ plangea_run <- function(reg,scen, dest, cfg){
 }
 
 
+# Setting up the progress bar
+iterations = nrow(tasks)
+
+# Progress bar object
+pb_l = progress::progress_bar$new(
+  format = "Loading scenario [:bar] :percent in :elapsed",
+  total = iterations, clear = FALSE, width = 70)
+
+progress_number = 1:iterations
+progress = function(n) {pb_l$tick(tokens = list(sp = progress_number[n]))}
+opts = list(progress = progress)
+
 # run in parallel
 
-num_clusters <- 10
+num_clusters <- 25
 
 cl <- makeCluster(num_clusters)
-
-
+doSNOW::registerDoSNOW(cl)
 # Run tasks in parallel
 foreach(i = 1:nrow(tasks), .combine = 'c') %dopar% {
+  suppressWarnings(suppressMessages(devtools::load_all("/dados/pessoal/francisco/plangea-pkg/", quiet = TRUE)))
   plangea_run(reg = tasks$reg[i], scen = tasks$scen[i] ,dest, cfg)
 }
 
