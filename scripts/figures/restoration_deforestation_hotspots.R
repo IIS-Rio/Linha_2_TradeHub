@@ -13,8 +13,6 @@ fcnzplus <- rast("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/lu
 
 # funcao transforma em area e depois em df
 
-x <- as.data.frame(baseline2050)
-
 area <- 1000*1000/10^4
 scenarios <- c("baseline","fcnz","fcnzplus")
 

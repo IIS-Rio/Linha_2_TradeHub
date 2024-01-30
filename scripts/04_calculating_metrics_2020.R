@@ -1,12 +1,18 @@
+# pacotes ----------------------------------------------------------------------
+
+library(tidyverse)
+
+#-------------------------------------------------------------------------------
+
 # caminho resultados
 
-p <- "/dados/projetos_andamento/TRADEhub/Linha_2/results/baseline_2020/"
+p <- "/dados/projetos_andamento/TRADEhub/Linha_2/results_up/baseline_2020/"
 
 # listando tabelas
 
-base_2020_agg <- grep(pattern = ".csv",list.files(p,"agg",full.names = T,recursive = T),value = T)
+base_2020_agg <- grep(pattern = ".csv",list.files(p,"agg",full.names = T,recursive = T),value = T) # so tem 58! sacooooooo
 
-base_2020_cum <- list.files(p,"cum",full.names = T,recursive = T)
+base_2020_cum <- list.files(p,"cum",full.names = T,recursive = T) # so tem 58! sacooooooo
 
 # loop pra salvar os resultados
 
@@ -80,6 +86,9 @@ tabela_final <- tabelas_final[[2]]%>%
   left_join(tabelas_final[[1]],by=c("ecoregion","name","scenario","variable","year"))%>%
   rename(agg_value=value)%>%
   mutate(value_2020=cum_value-agg_value)
+
+
+tabela_final <- as.data.frame(tabela_final)
 
 write.csv(tabela_final,paste0("/dados/projetos_andamento/TRADEhub/Linha_2/result_tables/plangea_results_ecoregions_","base_2020",".csv"),row.names = F)
 

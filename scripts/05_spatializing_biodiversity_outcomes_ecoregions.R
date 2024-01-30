@@ -8,6 +8,8 @@
 
 # criar uma tabela indicando se houve melhora ou piora
 
+library(sf)
+
 #------------------------------------------------------------------------------
 
 # caminho
@@ -35,8 +37,6 @@ fcnz_m <- filter(fcnz,variable=="metrics")
 length(unique(fcnz_m$ecoregion))
 fcnzplus_m <- filter(fcnzplus,variable=="metrics")
 length(unique(fcnzplus_m$ecoregion))
-
-# rever 12 e 2:  nao formaram resultado! ver pq! a 2 nem criou a pasta. precisa gerar pra essas 2! 
 
 # calculando valores relativos a 2020
 
@@ -123,7 +123,7 @@ summary(ecoregion_vec2)
 
 ecoregion_vec2 <- st_as_sf(left_join(fcnz_relative,ecoregion_vec2,by = join_by(ecoregion,name,year,variable,value_base_2020) ))%>%
   # elimina colunas com nome scenario
-  select(-starts_with("scenario"))
+  dplyr::select(-starts_with("scenario"))
 
 summary(ecoregion_vec2)
 

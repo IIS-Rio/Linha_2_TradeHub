@@ -10,7 +10,7 @@ library(jsonlite)
 
 # caminho pra salvar as analises por regiao
 
-p <- "/dados/projetos_andamento/TRADEhub/Linha_2/results"
+p <- "/dados/projetos_andamento/TRADEhub/Linha_2/results_up/"
   
 # uma pasta por regiao
 
@@ -19,38 +19,26 @@ regioes <- read.csv("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/subregio
 # f <- function(x)dir.create(file.path(p,x))
 # lapply(regioes$ID,f)
 
+scen <-"base"
 
-# configurando o JSON pra rodar pra varias regioes
-# cfg <- aux_read_cfg(file.path("/dados/pessoal/francisco/TradeHub/json/globiom_iiasa.json"))
-# updates cfg with plangea_path
+#base <- "/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/baseline_2020"
 
-# i=1
-# j=1
-
-# piloto com 1 scenario so
-
-scen <- list.files("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/2050",pattern = "base")
-
-#reg <- regioes$ID
-
-base <- "/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/baseline_2020"
 source <- "/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use_regional"
-dest <- "/dados/projetos_andamento/TRADEhub/Linha_2/results/baseline_2020/"
+dest <- "/dados/projetos_andamento/TRADEhub/Linha_2/results_up/baseline_2020/"
 
 cfg = jsonlite::fromJSON("/dados/pessoal/francisco/Linha_2_TradeHub/scripts/JSON/L2_ecoregions_current.json")
 
 reg <- regioes$ID
 
 # definir regioes para serem excluidas com base na area mto pequena
-# parou na 208
 
 excluir <- c(13,257,266,68,208,677,326) 
 
 reg <- reg[!reg %in% excluir]
 
+# regioes que nao estao rodando
+reg <- c(48,766)
 # nao rodar de novo as que ja foram
-
-#reg2 <- reg[which(reg==291):60]
 
 # definindo tasks
 
@@ -60,7 +48,7 @@ names(tasks) <- c("reg","scen")
 plangea_run <- function(reg,scen, dest, cfg){
   
       # definir aqui. testar ser results
-      cfg$io$base_path <- paste0(dest,reg,"/",scen,"/") #fazer so pra 1 regiao pra ver
+      cfg$io$base_path <- paste0(dest,reg,"/",scen,"/") 
   
       # aqui seria o caminho uso presente
       cfg$io$lu_relative_path <- paste0("land_use_regional/ecoregion_",reg,"/")
@@ -70,17 +58,35 @@ plangea_run <- function(reg,scen, dest, cfg){
 }
 
 
-# run in parallel
+
+# Setting up the progress bar --------------------------------------------------
+
+#iterations = nrow(tasks)
+
+# Progress bar object
+# pb_l = progress::progress_bar$new(
+#   format = "Loading scenario [:bar] :percent in :elapsed",
+#   total = iterations, clear = FALSE, width = 70)
+# 
+# progress_number = 1:iterations
+# progress = function(n) {pb_l$tick(tokens = list(sp = progress_number[n]))}
+# opts = list(progress = progress)
+
+
+# run in parallel --------------------------------------------------------------
 
 num_clusters <- 10
 
 cl <- makeCluster(num_clusters)
-
-
+doSNOW::registerDoSNOW(cl)
 # Run tasks in parallel
-foreach(i = 1:nrow(tasks), .combine = 'c') %dopar% {
-  plangea_run(reg = tasks$reg[i], scen = tasks$scen[i] ,dest, cfg)
-}
+foreach(i = 1:nrow(tasks), .combine = 'c',.packages = c('devtools', 'progress')
+        #,.options.snow = opts
+        ) %dopar% {
+          suppressWarnings(suppressMessages(devtools::load_all("/dados/pessoal/francisco/plangea-pkg/", quiet = TRUE)))
+          plangea_run(reg = tasks$reg[i], scen = tasks$scen[i] ,dest, cfg)
+        }
 
 # Stop the parallel cluster
 stopCluster(cl)
+

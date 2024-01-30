@@ -14,20 +14,21 @@ library(tidyverse)
 
 # caminho resultados
 
-p <- "/dados/projetos_andamento/TRADEhub/Linha_2/results"
+p <- "/dados/projetos_andamento/TRADEhub/Linha_2/results_up/"
 
 # listando tabelas
 
-base_2020 <- list.files("/dados/projetos_andamento/TRADEhub/Linha_2/results/baseline_2020",".csv",full.names = T,recursive = T)
+base_2020 <- list.files("/dados/projetos_andamento/TRADEhub/Linha_2/results_up/baseline_2020",".csv",full.names = T,recursive = T)
 # base_2020 <- grep(pattern = "baseline_2020",tbls,value = T)
 tbls <- list.files(p,recursive = T,".csv",full.names = T)
 fcnz <- grep(pattern = "fcnz",tbls,value = T) # tem repetido
 fcnzplus <- grep(pattern = "fcplusnz",tbls,value = T)
 base_2050 <- grep(pattern = "base",tbls,value = T)
-base_2050 <- grep(pattern = "baseline_2020",base_2050,value = T,invert = T)#tem repetido
+base_2050 <- grep(pattern = "baseline_2020",base_2050,value = T,invert = T)
 
 scenarios <- list(base_2050,fcnz,fcnzplus)
 scen_name <- c("base_2050","fcnz","fcnzplus")
+
 # loop pra salvar os resultados
 #c=1
 
@@ -45,7 +46,7 @@ for(i in seq_along(scenarios)){
     if(scen_name[i]!="base_2020"){
       for(n in seq_along(nms_splitted)){
 
-        nm <- nms_splitted[[n]][7]
+        nm <- nms_splitted[[n]][8]
         nms[n] <- nm
     }
       }else{
@@ -114,15 +115,27 @@ for(i in seq_along(scenarios)){
 library(readr)
 fcnzplus <- read_csv("/dados/projetos_andamento/TRADEhub/Linha_2/result_tables/plangea_results_ecoregions_fcnzplus.csv")
 
-table(fcnzplus$name)# 51 regioes
+table(fcnzplus$name)# 57 regioes. falta!!
+
+
+legenda <- read.csv("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/subregions/dicionario_Cerrado_wwf.csv")
+
+excluir <- c(13,257,266,68,208,677,326) 
+
+
+legenda$ID[which(!legenda$ID %in% unique(fcnzplus$ecoregion))]
+
+# faltou 48 102 766
 
 fcnz <- read_csv("/dados/projetos_andamento/TRADEhub/Linha_2/result_tables/plangea_results_ecoregions_fcnz.csv")
 
-table(fcnz$name)# 60 regioes - eh o correto
+table(fcnz$name)# 58 - 48, 766
 
 base2050 <- read_csv("/dados/projetos_andamento/TRADEhub/Linha_2/result_tables/plangea_results_ecoregions_base_2050.csv")
 
-table(base2050$name)# 64 regioes - tem 4 a mais.
+table(base2050$name)## 58 - 48, 766
+
+# deve ser por causa do base 2020!
 
 summary(fcnz) # tem 2 NAs!
 summary(base2050) # tem 2 NAs tb!
@@ -138,7 +151,6 @@ fcnzplusNA <- filter(fcnzplus,is.na(value)) #102
 
 eco <- read.csv("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/subregions/dicionario_Cerrado_wwf.csv")
 
-# 68 = Beni savanna. Essa ta na lista pra descartar!!
 # 102 = Caqueta moist forests
 
 ecoregion <- rast("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/subregions/ecoregions_wwf_plusCerrado.tif")

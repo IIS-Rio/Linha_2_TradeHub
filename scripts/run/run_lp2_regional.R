@@ -4,7 +4,7 @@
 
 devtools::load_all("/dados/pessoal/francisco/plangea-pkg/")
 library(jsonlite)
-
+library(doSNOW)
 #-------------------------------------------------------------------------------
 
 # rodando de novo depois de corrigir baseline 2020
@@ -28,9 +28,11 @@ regioes <- read.csv("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/subregio
 # i=1
 # j=1
 
-# piloto com 1 scenario so
+# falta rodar baseline e fnczplus!
 
-scen <- list.files("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/2050",pattern = "fcnz")
+#scen <- list.files("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use/2050")
+
+scen=c("base","fcnz","fcplusnz")
 
 #reg <- regioes$ID
 
@@ -50,6 +52,8 @@ excluir <- c(13,257,266,68,208,677,326)
 
 reg <- reg[!reg %in% excluir]
 
+reg=c( 48,102, 766)
+
 # reg so pra ecoreg. q faltaram
 
 #reg <- c(690,727)
@@ -59,6 +63,10 @@ reg <- reg[!reg %in% excluir]
 
 tasks <- expand.grid(reg,scen)
 names(tasks) <- c("reg","scen")
+
+# isso aqui eh so pra rodar alguns q faltaram
+
+tasks <- tasks[c(-5,-2),]
 
 plangea_run <- function(reg,scen, dest, cfg){
   
@@ -91,12 +99,14 @@ opts = list(progress = progress)
 
 # run in parallel
 
-num_clusters <- 25
+num_clusters <- 30
 
 cl <- makeCluster(num_clusters)
 doSNOW::registerDoSNOW(cl)
 # Run tasks in parallel
-foreach(i = 1:nrow(tasks), .combine = 'c') %dopar% {
+foreach(i = 1:nrow(tasks), .combine = 'c',.packages = c('devtools', 'progress'),
+        .options.snow = opts,
+        .errorhandling = "remove") %dopar% {
   suppressWarnings(suppressMessages(devtools::load_all("/dados/pessoal/francisco/plangea-pkg/", quiet = TRUE)))
   plangea_run(reg = tasks$reg[i], scen = tasks$scen[i] ,dest, cfg)
 }

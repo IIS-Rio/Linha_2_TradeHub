@@ -30,8 +30,8 @@ fcnplus <- ecoregions%>%select_at(c(1,2,4,6,9:12))
 ecoregions_long_2020 <- pivot_longer(st_drop_geometry(ecoregions),cols = c(5,8,10))
 ecoregions_long_2050 <- pivot_longer(st_drop_geometry(ecoregions),cols = c(7,11))
 
-minmax2020 <- range(ecoregions_long_2020$value)
-minmax2050 <- range(ecoregions_long_2050$value)
+minmax2020 <- range(ecoregions_long_2020$value,na.rm = T)
+minmax2050 <- range(ecoregions_long_2050$value,na.rm = T)
 
 # mas aqui se os valores sao subtituidos por -2 e 2. os valores minmax deveriam ser esses.
 
@@ -66,8 +66,6 @@ table(fcnz$status50) # 1uase todos melhoram!
 
 # fcnzplus --------------------------------------------------------------------
 
-table(fcnplus$status20)# so 4 improved. 
-table(fcnplus$status50)# todas!
 
 fcnplus <- fcnplus%>%
   filter_all(all_vars(!is.na(.)))%>%
@@ -86,11 +84,14 @@ fcnplus <- fcnplus%>%
       status50 == "worsened" ~ (rt50fcnzpls - minmax2050[1]) / (minmax2050[2] - minmax2050[1])* -1,
       TRUE ~ NA_real_))
 
+table(fcnplus$status20)# so 3 improved. isso nao pode ta certo!!
+table(fcnplus$status50)# todas!
+
+
 # base ------------------------------------------------------------------------
 
 # so tem a comparacao com 2020
 
-table(base$status) # todos pioram (ok)
 
 base <- base%>%
   filter_all(all_vars(!is.na(.)))%>%
@@ -102,6 +103,7 @@ base <- base%>%
     status == "worsened" ~ (rt20bse - minmax2020[1]) / (minmax2020[2] - minmax2020[1])* -1,
     TRUE ~ NA_real_))
 
+table(base$status) # todos pioram (ok)
 
 # plotando mapas --------------------------------------------------------------
 

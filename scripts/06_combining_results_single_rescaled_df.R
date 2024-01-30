@@ -100,14 +100,14 @@ base <- st_drop_geometry(base)
 # convertendo em long
 
 base_long_20 <- pivot_longer(base,cols =c(9) )%>% 
-  select(c(1,2,6,7,10))%>%
+  dplyr::select(c(1,2,6,7,10))%>%
   mutate(ratio="compared2_2020",
          scenario="baseline"
   )
 
 
 fcnz_long_20 <- pivot_longer(fcnz,cols =c(11) )%>% 
-  select(c(1,2,8,9,13))%>%
+  dplyr::select(c(1,2,8,9,13))%>%
   mutate(ratio="compared2_2020",
          scenario = "fcnz"
   )%>%
@@ -115,7 +115,7 @@ fcnz_long_20 <- pivot_longer(fcnz,cols =c(11) )%>%
 
 
 fcnz_long_50 <- pivot_longer(fcnz,cols =c(12) )%>% 
-  select(c(1,2,8,10,13))%>%
+  dplyr::select(c(1,2,8,10,13))%>%
   mutate(ratio="compared2_2050",
          scenario="fcnz"
   )%>%
@@ -123,7 +123,7 @@ fcnz_long_50 <- pivot_longer(fcnz,cols =c(12) )%>%
 
 
 fcnzplus_long_20 <- pivot_longer(fcnplus,cols =c(11) )%>% 
-  select(c(1,2,8,9,13))%>%
+  dplyr::select(c(1,2,8,9,13))%>%
   mutate(ratio="compared2_2020",
          scenario="fcnzplus"
   )%>%
@@ -131,7 +131,7 @@ fcnzplus_long_20 <- pivot_longer(fcnplus,cols =c(11) )%>%
 
 
 fcnzplus_long_50 <- pivot_longer(fcnplus,cols =c(12) )%>% 
-  select(c(1,2,8,10,13))%>%
+  dplyr::select(c(1,2,8,10,13))%>%
   mutate(ratio="compared2_2050",
          scenario="fcnzplus"
   )%>%

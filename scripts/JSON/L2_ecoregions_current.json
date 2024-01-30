@@ -35,7 +35,7 @@
 	  	"class_types": [  "A", "N", "A", "I"],
 	  	"classes_raster_names":
 	  	["agriculture.tif",
-	  	"natveg.tif",
+	  	"nat_veg.tif",
 	  	"pastureland.tif",
 	  	"other.tif"]
 	  },
@@ -285,7 +285,7 @@
 	  	   "class_types": [  "A",   "N",   "A",   "I"],
 	       "classes_raster_names":
 	       ["agriculture.tif",
-	  	    "natveg.tif",
+	  	    "nat_veg.tif",
 	  	    "pastureland.tif",
 	  	    "other.tif"]
 	     }
