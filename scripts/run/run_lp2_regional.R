@@ -52,10 +52,9 @@ excluir <- c(13,257,266,68,208,677,326)
 
 reg <- reg[!reg %in% excluir]
 
-reg=c( 48,102, 766)
+#reg=c( 48,102, 766)
 
 # reg so pra ecoreg. q faltaram
-
 #reg <- c(690,727)
 
 
@@ -65,10 +64,9 @@ tasks <- expand.grid(reg,scen)
 names(tasks) <- c("reg","scen")
 
 # isso aqui eh so pra rodar alguns q faltaram
+#tasks <- tasks[c(-5,-2),]
 
-tasks <- tasks[c(-5,-2),]
-
-plangea_run <- function(reg,scen, dest, cfg){
+plangea_run <- function(reg, scen, dest, cfg) {
   
       # definir aqui. testar ser results
       cfg$io$base_path <- paste0(dest,reg,"/",scen,"/") #fazer so pra 1 regiao pra ver
@@ -99,7 +97,7 @@ opts = list(progress = progress)
 
 # run in parallel
 
-num_clusters <- 30
+num_clusters <- 10
 
 cl <- makeCluster(num_clusters)
 doSNOW::registerDoSNOW(cl)
@@ -107,8 +105,10 @@ doSNOW::registerDoSNOW(cl)
 foreach(i = 1:nrow(tasks), .combine = 'c',.packages = c('devtools', 'progress'),
         .options.snow = opts,
         .errorhandling = "remove") %dopar% {
+          
   suppressWarnings(suppressMessages(devtools::load_all("/dados/pessoal/francisco/plangea-pkg/", quiet = TRUE)))
-  plangea_run(reg = tasks$reg[i], scen = tasks$scen[i] ,dest, cfg)
+  plangea_run(reg = tasks$reg[i], scen = tasks$scen[i], dest, cfg)
+  
 }
 
 # Stop the parallel cluster
