@@ -9,7 +9,7 @@ library(terra)
 bdbr = vroom("/dados/pessoal/luga/dev/BD-BR/data/database_versions/BD_BR_taxon_v0.1.csv.gz")
 
 # Raster base ------------------------------------------------------------------
-base_ras = rast("/dados/projetos_andamento/TRADEhub/Linha_2/other_covariables/antropic_2020_rsp.tif")
+base_ras = rast("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/land_use_regional/ecoregion_1/agriculture.tif")
 
 # Lendo rasters de espécies ----------------------------------------------------
 sp_ids = unique(bdbr$spp_id)
@@ -31,3 +31,4 @@ for (iter in seq_along(sp_ids)) {
 }
 
 Sys.time() - t0
+hahah
