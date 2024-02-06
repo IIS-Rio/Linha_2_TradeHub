@@ -2,6 +2,7 @@
 #pacotes ------------------------------------------------------------------------
 
 library(tidyverse)
+library(stringr)
 #-------------------------------------------------------------------------------
 
 # logica de todas as metricas. O denominador eh o cenario de referencia logo valores <1 indicam que o denominador eh maior que o cenario q esta sendo comparado. Porem, tem valores negativos e positivos: qndo eh positivo mas o valor absoluto do denominador eh maior, isso indica q houve melhora. se for menor eh piora.
@@ -14,23 +15,19 @@ library(tidyverse)
 
 # caminho resultados
 
-p <- "/dados/projetos_andamento/TRADEhub/Linha_2/results_up/"
+p <- "/dados/projetos_andamento/TRADEhub/Linha_2/results_up2/"
 
 # listando tabelas
 
-base_2020 <- list.files("/dados/projetos_andamento/TRADEhub/Linha_2/results_up/baseline_2020",".csv",full.names = T,recursive = T)
-# base_2020 <- grep(pattern = "baseline_2020",tbls,value = T)
+# base_2020 <- list.files("/dados/projetos_andamento/TRADEhub/Linha_2/results_up/baseline_2020",".csv",full.names = T,recursive = T)
+# # base_2020 <- grep(pattern = "baseline_2020",tbls,value = T)
 tbls <- list.files(p,recursive = T,".csv",full.names = T)
 fcnz <- grep(pattern = "fcnz",tbls,value = T) # tem repetido
 fcnzplus <- grep(pattern = "fcplusnz",tbls,value = T)
 base_2050 <- grep(pattern = "base",tbls,value = T)
-base_2050 <- grep(pattern = "baseline_2020",base_2050,value = T,invert = T)
 
 scenarios <- list(base_2050,fcnz,fcnzplus)
 scen_name <- c("base_2050","fcnz","fcnzplus")
-
-# loop pra salvar os resultados
-#c=1
 
 
 for(i in seq_along(scenarios)){
@@ -42,19 +39,10 @@ for(i in seq_along(scenarios)){
     nms_splitted <- str_split(string = scenarios[[i]],pattern = "/")
 
     nms <- list()
-
-    if(scen_name[i]!="base_2020"){
       for(n in seq_along(nms_splitted)){
-
-        nm <- nms_splitted[[n]][8]
-        nms[n] <- nm
-    }
-      }else{
-          for(n in seq_along(nms_splitted)){
-        
             nm <- nms_splitted[[n]][8]
             nms[n] <- nm
-            }}
+            }
 
     nms <- unlist(nms)
     names(df_results) <- nms
@@ -82,10 +70,8 @@ for(i in seq_along(scenarios)){
 
     # filtrando resultados de interesse (scen baseline so gerou uma linha)
 
-    if(scen_name[i]!="base_2020"){
     df_cbnd <- filter(df_cbnd ,scenario_name=="Future land-use")
-}else{df_cbnd <- df_cbnd <- df_cbnd}
-    
+
     # format long
 
     clmns2keep <- grep(".val",x = names(df_cbnd))
@@ -95,13 +81,16 @@ for(i in seq_along(scenarios)){
     df_long2 <- df_long%>%
       # criando coluna com ano (acho q tem q excluir o q nao eh future lu)
       mutate(variable=if_else(name %in% c("VEG","AGR","PAS","area"),true="lulc","metrics"))%>%
-      # filtrando dados indesejaveis
-      filter(name!="target_value")%>%
-      mutate(year=if_else(scenario=="base_2020",2020,2050))
-
+      # filtrando dados indesejaveis (exclui cb e oc q sao calculados por fora)
+      filter(name!="target_value",
+             name %in% c("it.val","bd.val","ec.val"))%>%
+      mutate(year=if_else(scenario=="base_2020",2020,2050),
+             # adicionando valor 0 pra regioes q nao tiveram mudança no it
+             value=if_else(is.na(value),0,value))
+      
     
 
-  write.csv(df_long2,paste0("/dados/projetos_andamento/TRADEhub/Linha_2/result_tables/plangea_results_ecoregions_",scen_name[i],".csv"),row.names = F)
+  write.csv(df_long2,paste0("/dados/projetos_andamento/TRADEhub/Linha_2/result_tables/plangea_bio_results_ecoregions_",scen_name[i],".csv"),row.names = F)
 
   #  c=c+1
   
@@ -110,52 +99,3 @@ for(i in seq_along(scenarios)){
   }
 
 
-# checando resultados
-
-library(readr)
-fcnzplus <- read_csv("/dados/projetos_andamento/TRADEhub/Linha_2/result_tables/plangea_results_ecoregions_fcnzplus.csv")
-
-table(fcnzplus$name)# 57 regioes. falta!!
-
-
-legenda <- read.csv("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/subregions/dicionario_Cerrado_wwf.csv")
-
-excluir <- c(13,257,266,68,208,677,326) 
-
-
-legenda$ID[which(!legenda$ID %in% unique(fcnzplus$ecoregion))]
-
-# faltou 48 102 766
-
-fcnz <- read_csv("/dados/projetos_andamento/TRADEhub/Linha_2/result_tables/plangea_results_ecoregions_fcnz.csv")
-
-table(fcnz$name)# 58 - 48, 766
-
-base2050 <- read_csv("/dados/projetos_andamento/TRADEhub/Linha_2/result_tables/plangea_results_ecoregions_base_2050.csv")
-
-table(base2050$name)## 58 - 48, 766
-
-# deve ser por causa do base 2020!
-
-summary(fcnz) # tem 2 NAs!
-summary(base2050) # tem 2 NAs tb!
-summary(fcnzplus) # tem 1 NA
-
-# ver qual eh NA
-
-baseNA <- filter(base2050,is.na(value)) # 102,68
-fcnzNA <- filter(fcnz,is.na(value)) #102,68
-fcnzplusNA <- filter(fcnzplus,is.na(value)) #102
-
-# quais sao essas ecorregioes?
-
-eco <- read.csv("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/subregions/dicionario_Cerrado_wwf.csv")
-
-# 102 = Caqueta moist forests
-
-ecoregion <- rast("/dados/projetos_andamento/TRADEhub/Linha_2/rawdata/subregions/ecoregions_wwf_plusCerrado.tif")
-
-fre <- terra::freq(ecoregion)
-
-plot(ecoregion==102)# essa ecorregiao deveria ser calculada, nao sei pq nao foi!
-# tem q calcular, mas foi so pro it
