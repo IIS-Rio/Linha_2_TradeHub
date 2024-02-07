@@ -36,7 +36,7 @@ for (region_value in unique_regions) {
     # transformar em qntidade e computar em tabela
     masked_raster <- r*region_mask
     # ha restaurados
-    masked_raster_area <- masked_raster*100
+    masked_raster_area <-round( masked_raster*100)
     # pensar em como combinar info. restauracao com carbono!
     carbon_restored <- cb_rest*masked_raster_area
     total_carbon_restored <- sum(carbon_restored[],na.rm = T)
@@ -65,7 +65,7 @@ converted_areas <- grep("conversion",lst_rstrs,value=T)
 
 lst_converted_areas <- list()
 c=1
-for (region_value in unique_regions) {
+for (region_value in unique_regions[1:4]) {
   # Create a mask for the current region
   region_mask <- ecoregions == region_value
   # Mask the large raster based on the current region
@@ -74,8 +74,8 @@ for (region_value in unique_regions) {
     r <- rast(converted_areas[[i]])
     # transformar em qntidade e computar em tabela
     masked_raster <- r*region_mask
-    # ha restaurados
-    masked_raster_area <- masked_raster*100
+    # ha desmatamdos
+    masked_raster_area <- round(masked_raster*100)
     # pensar em como combinar info. restauracao com carbono!
     carbon_emited <- cb_emission*masked_raster_area
     total_carbon_emited <- sum(carbon_emited[],na.rm = T)
