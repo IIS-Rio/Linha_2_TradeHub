@@ -65,7 +65,7 @@ converted_areas <- grep("conversion",lst_rstrs,value=T)
 
 lst_converted_areas <- list()
 c=1
-for (region_value in unique_regions[1:4]) {
+for (region_value in unique_regions) {
   # Create a mask for the current region
   region_mask <- ecoregions == region_value
   # Mask the large raster based on the current region

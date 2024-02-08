@@ -12,7 +12,7 @@ library(data.table)
 
 # resultados biodiv
 
-bio_tbl <- do.call(rbind,lapply(list.files("/dados/projetos_andamento/TRADEhub/Linha_2/result_tables",full.names = T),fread))%>%
+bio_tbl <- do.call(rbind,lapply(list.files("/dados/projetos_andamento/TRADEhub/Linha_2/result_tables",full.names = T,pattern = "plangea"),fread))%>%
   rename(ecoregion_ID=ecoregion)
 
 # carbon
@@ -48,10 +48,7 @@ summary(bio_tbl$value)
 
 bio_tbl_sc <- bio_tbl %>%
   # Remove extreme values for ratio 2050/base 2050
-  mutate(value_skewed = if_else(value < -11.189, -11, if_else(value > 1, 1, value)),
-         value_sc = if_else(value_skewed == -11, -1,
-                            (value_skewed - min(value_skewed)) / (max(value_skewed) - min(value_skewed)) * 2 - 1)
-  )
+  mutate(value_skewed = if_else(value < -11.189, -11, if_else(value > 1, 1, value)))
 
 hist(bio_tbl_sc$value)
 hist(bio_tbl_sc$value_sc)
@@ -218,4 +215,4 @@ hist(bio_tbl_sc$value_skewed)
 
 write.csv(final_tbl,"/dados/projetos_andamento/TRADEhub/Linha_2/result_tables/combined_results_raw.csv",row.names = F)
 
-write.csv(bio_tbl_sc,"/dados/projetos_andamento/TRADEhub/Linha_2/result_tables/bio_results_sc.csv",row.names = F)
+write.csv(bio_tbl_sc,"/dados/projetos_andamento/TRADEhub/Linha_2/result_tables/bio_results.csv",row.names = F)

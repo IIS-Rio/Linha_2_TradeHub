@@ -31,8 +31,9 @@ for(id in seq_along(unique_ID)){
     area_total <- sum(conv_area[],na.rm=T)
     area_total_res <- sum(rest_area[],na.rm=T)
     df <- data.frame(area_conv_ha=area_total,area_rest_ha=area_total_res,scenario=s,ecoregion=unique_ID[id],eco_area)
-    conv_list[[c]] <- df
-    }
+    
+  }
+  conv_list[[c]] <- df
   c <- c+1
 }
 
