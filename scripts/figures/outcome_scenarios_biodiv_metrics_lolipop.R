@@ -40,11 +40,22 @@ custom_labeller <- function(variable, value) {
   return(value)
 }
 
+# Calculate maximum values for each level of the name column
+max_values <- bio2 %>%
+  group_by(name) %>%
+  summarize(max_value = max(value))
+
+# Merge the maximum values with the original dataframe
+bio2 <- bio2 %>%
+  left_join(max_values, by = "name") %>%
+  mutate(scaled_value = value / max_value) %>%
+  select(-max_value)
+
 plt_list <- list()
 for (i in seq_along(label)){
   fig <-bio2%>%
           filter(name==m[i])%>%
-          mutate(scaled_value=value/max(value))%>%
+          #mutate(scaled_value=value/max(value))%>%
         ggdotchart(x = "new_ID", y = "scaled_value", 
            color = "condition",                               
            palette = c("#619CFF","#F8766D","gray" ), # Custom color palette
@@ -227,7 +238,7 @@ for (i in seq_along(label)){
 }
 bd2 <- plt_list2[[1]]
 ec2 <- plt_list2 [[2]]
-it2 <- plt_list3 [[3]]
+it2 <- plt_list2 [[3]]
 
 
 ggsave(plot = bd2,filename = "/dados/pessoal/francisco/Linha_2_TradeHub/figures/bd_Lollipop_econms.png",width = 19,height = 15,units = "cm")

@@ -41,9 +41,9 @@ for (region_value in unique_regions) {
     carbon_restored <- cb_rest*masked_raster_area
     total_carbon_restored <- sum(carbon_restored[],na.rm = T)
     # convert to CO2
-    convertion_rate <- 44/12
-    total_CO2_restored <- total_carbon_restored*convertion_rate
-    df <- data.frame(scen=snrs_nms[i],CO2_sequestered=total_CO2_restored,ecoregion_ID=region_value)
+    #convertion_rate <- 44/12
+    #total_CO2_restored <- total_carbon_restored*convertion_rate
+    df <- data.frame(scen=snrs_nms[i],CO2_sequestered=total_carbon_restored,ecoregion_ID=region_value)
     lst_restored_areas[[c]] <- df
     c=c+1
   }
@@ -80,9 +80,9 @@ for (region_value in unique_regions) {
     carbon_emited <- cb_emission*masked_raster_area
     total_carbon_emited <- sum(carbon_emited[],na.rm = T)
     # convert to CO2
-    convertion_rate <- 44/12
-    total_CO2_emited <- total_carbon_emited*convertion_rate
-    df <- data.frame(scen=snrs_nms[i],CO2_emited=total_CO2_emited,ecoregion_ID=region_value)
+    #convertion_rate <- 44/12
+    #total_CO2_emited <- total_carbon_emited*convertion_rate
+    df <- data.frame(scen=snrs_nms[i],CO2_emited=total_carbon_emited,ecoregion_ID=region_value)
     lst_converted_areas[[c]] <- df
     c=c+1
   }
