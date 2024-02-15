@@ -45,6 +45,12 @@ net_cb <- cb_em %>%
 
 final_tbl <- rbind(bio_tbl,cb_seq,cb_em,net_cb[,c(1:3,5,6,8)])
 
+# excluir ecorregioes
+
+excluir <- c(13,257,266,68,208,677,326)
+
+final_tbl2 <- final_tbl%>%filter(!ecoregion_ID%in%excluir)
+
 # normalizando valores metricas (mantendo todos e eliminando valores)
 
 bio_tbl_sc <- bio_tbl %>%
@@ -55,10 +61,11 @@ hist(bio_tbl_sc$value)
 hist(bio_tbl_sc$value_sc)
 hist(bio_tbl_sc$value_skewed)
 
+
 # salvando resultados
 
 # write.csv(df_comb,"/dados/projetos_andamento/TRADEhub/Linha_2/result_tables/combined_results_rescaled.csv",row.names = F)
 
-write.csv(final_tbl,"/dados/projetos_andamento/TRADEhub/Linha_2/result_tables/combined_results_raw.csv",row.names = F)
+write.csv(final_tbl2,"/dados/projetos_andamento/TRADEhub/Linha_2/result_tables/combined_results_raw.csv",row.names = F)
 
 write.csv(bio_tbl_sc,"/dados/projetos_andamento/TRADEhub/Linha_2/result_tables/bio_results.csv",row.names = F)

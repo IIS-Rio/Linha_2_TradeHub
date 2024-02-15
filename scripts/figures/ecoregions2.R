@@ -53,7 +53,7 @@ ecoregions2$label <- paste(ecoregions2$new_ID,ecoregions2$Nome)
 color_palette <- terrain.colors(n = 60)
 centroid <- cbind(centroid,st_coordinates(centroid))
 
-ggplot() +
+ecomaps <- ggplot() +
   geom_sf(data = ecoregions2, aes(fill = label), color = "black") +
   #scale_fill_discrete(colours = color_palette) +
   scale_fill_manual(values = color_palette) +
@@ -61,16 +61,17 @@ ggplot() +
   #theme(legend.position = "none")+
   geom_text_repel(data = centroid,aes(x = X, y = Y, label = new_ID),
                   hjust = 0, nudge_x = 1, nudge_y = 4,
-                  size = 2, color = "black", fontface = "bold",bg.color = "white",bg.r = 0.25)+
+                  size = 3, color = "black", fontface = "bold",bg.color = "white",bg.r = 0.25)+
   guides(fill = guide_legend(
-    nrow =20 ,       # Number of rows
+    nrow =30 ,       # Number of rows
     byrow = TRUE,   # Arrange items by row
     title.position = "top"  # Position title at the top
   ))+
-  theme(legend.text = element_text(size=7),
+  theme(legend.text = element_text(size=10),
         legend.position = "right")
 
 
 # draw text labels
 
 
+ggsave(plot = ecomaps, "/dados/pessoal/francisco/Linha_2_TradeHub/figures/ecoregions_with_names.png",width = 24,height = 15,scale = 1)

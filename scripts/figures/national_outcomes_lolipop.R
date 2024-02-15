@@ -138,7 +138,7 @@ carbon <- df_carb2%>%
              #label = round(data$new_ID,1),                        # Add mpg values as dot labels
              #font.label = list(color = "black", size = 7,vjust = 0.5),# Adjust label parameters
              ggtheme = theme_minimal()                        # ggplot2 theme
-             ,ylab = "G tons CO2",xlab="",title="")+
+             ,ylab = "Megatons CO2",xlab="",title="")+
   scale_x_discrete(labels=rev(c("baseline","fcnz","fcnzplus")))+
   geom_hline(yintercept = 0, linetype = 2, color = "black")+
   facet_wrap(~name,labeller = custom_labeller,)+
