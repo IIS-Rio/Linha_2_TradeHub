@@ -49,14 +49,6 @@ df_comb$scenarios<-factor(df_comb$scenarios, levels=c("baseline","fcnz","fcnzplu
 df_comb$name<-factor(df_comb$name, levels=c("bd.val","ec.val","it.val"))
 
 
-custom_labeller <- function(variable, value) {
-  if(variable == "name") {
-    value <- ifelse(value == "bd.val", "Reduction of\n extinction debt", 
-                    ifelse(value == "ec.val", "Reduction of\n ecoregion vulnerability", 
-                           "Reduction of\n ecosystem\n integrity impact"))
-  }
-  return(value)
-}
 # creating graph
 
 # Calculate maximum values for each level of the name column
