@@ -1,4 +1,6 @@
 library(ggpubr)
+library(tidyverse)
+library(data.table)
 
 df_oc <- fread("/dados/projetos_andamento/TRADEhub/Linha_2/result_tables/oc_reais_ecoregions.csv")
 
@@ -68,6 +70,14 @@ oc <- df_oc2%>%
 # saving file
 ggsave(plot = oc,filename = "/dados/pessoal/francisco/Linha_2_TradeHub/figures/oc_National.png", width = 8, height = 8,units = "cm")
 
+
+df_oc3 <- df_oc2%>%
+  filter(scen!="baseline_2050")%>%
+  mutate(billion_reais=sum_value/10^9)
+
+write.csv(df_oc3,"/dados/pessoal/francisco/Linha_2_TradeHub/tables/oc_rest_national.csv",row.names = F)
+
+
 # ric
 
 ric <- df_ic%>%
@@ -99,6 +109,14 @@ ric <- df_ic%>%
 
 
 ggsave(plot = ric,filename = "/dados/pessoal/francisco/Linha_2_TradeHub/figures/ric_National.png", width = 8, height = 8,units = "cm")
+
+
+df_ic_2 <- df_ic%>%
+  filter(scen!="baseline_2050")%>%
+  mutate(billion_reais=sum_value/10^9)
+
+write.csv(df_ic_2,"/dados/pessoal/francisco/Linha_2_TradeHub/tables/rc_rest_national.csv",row.names = F)
+
 
 # combinando as duas
 
